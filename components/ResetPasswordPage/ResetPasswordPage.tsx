@@ -54,7 +54,7 @@ const ResetPasswordPage = () => {
       }
 
       toast.success("Password updated successfully");
-      router.push("/login");
+      router.push("/auth");
     } catch (error) {
       toast.error("Failed to reset password");
     }

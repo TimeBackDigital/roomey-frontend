@@ -12,10 +12,9 @@ export type SignInError = {
 };
 
 export type CaptchaApi = {
-  /** Get an existing token, or wait for a fresh one */
   getFreshToken: () => Promise<string>;
-  /** Force a reset & clear the current token */
   reset: () => void;
-  /** Just clear the token (without remounting) */
   clear: () => void;
 };
+
+export type AuthFormType = "login" | "register";

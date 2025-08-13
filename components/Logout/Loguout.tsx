@@ -10,7 +10,7 @@ const Loguout = () => {
   const handleSignOut = async () => {
     await signOut();
 
-    router.push("/login");
+    router.push("/auth");
   };
 
   return (

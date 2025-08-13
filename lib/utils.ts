@@ -19,3 +19,15 @@ export const getRoleSegment = (role: unknown): string | undefined => {
   if (role) return ROLE_SLUG[role as keyof typeof ROLE_SLUG];
   return undefined;
 };
+
+export const CheckEmail = (s: string) => /\S+@\S+\.\S+/.test(s);
+
+// Very permissive: digits with optional +, spaces, dashes, parentheses
+export const CheckPhone = (s: string) => /^[+]?[\d\s\-().]{7,20}$/.test(s);
+
+export const NormalizePhone = (raw: string) => {
+  let d = raw.replace(/[^\d]/g, "");
+  if (d.startsWith("0")) d = `63${d.slice(1)}`;
+  else if (!d.startsWith("63")) d = `63${d}`;
+  return `+${d}`;
+};

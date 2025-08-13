@@ -57,7 +57,7 @@ function InputOTPSlot({
       data-active={isActive}
       // square-ish box, rounded corners, subtle border, focus ring
       className={cn(
-        "relative flex h-10 w-10 items-center justify-center rounded-md border-2 border-primary bg-background text-base font-medium shadow-xs transition",
+        "relative flex h-10 w-10 items-center justify-center rounded-md border border-primary bg-background text-base font-medium shadow-xs transition",
         "data-[active=true]:ring-[1px] data-[active=true]:ring-ring/50",
         "aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20",
         className

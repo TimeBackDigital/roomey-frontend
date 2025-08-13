@@ -1,20 +1,23 @@
 "use client";
 
-import { useCurrentUser } from "@/hooks/getUserHook";
-import { ExtractFirstLetterRole } from "@/lib/utils";
+import OnboardingNavigation from "@/components/Navigation/OnboardingNavigation/OnboardingNavigation";
+import { useSessionQuery } from "@/hooks/getUserHook";
 import { redirect } from "next/navigation";
 import React from "react";
 
 const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
-  const { data: user } = useCurrentUser();
+  const { data: user } = useSessionQuery();
 
-  if (!user) {
-    return redirect("/login");
+  if (!user?.user?.user_is_onboarded) {
+    return redirect("/auth");
   }
 
-  redirect(`/${ExtractFirstLetterRole(user.role as string)}/dashboard`);
-
-  return <div>{children}</div>;
+  return (
+    <>
+      <OnboardingNavigation />
+      <section className="container">{children}</section>
+    </>
+  );
 };
 
 export default OnboardingLayout;

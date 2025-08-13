@@ -13,9 +13,9 @@ const CallbackPage = () => {
   const target = useMemo(() => {
     if (session === undefined) return null;
 
-    if (!session) return "/login";
+    if (!session) return "/auth";
 
-    if (!session.user_phone_number_verified) return "/otp-verification";
+    if (!session.phoneNumberVerified) return "/otp-verification";
 
     const roleSegment = getRoleSegment(session?.role);
     return roleSegment ? `/${roleSegment}/dashboard` : "/dashboard";

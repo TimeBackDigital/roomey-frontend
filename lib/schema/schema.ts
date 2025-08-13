@@ -1,22 +1,30 @@
 import { phoneNumber } from "better-auth/plugins";
 import { z } from "zod";
 
-const phoneRegex = new RegExp(
-  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
-);
+export const phoneRegex = /^[+]?[\d\s\-().]{7,20}$/;
 
 export const LoginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  type: z.literal("login"),
+  identifier: z.string().min(1, "Required field").max(50).trim(),
+  password: z.string().min(6, "Required field").max(25).trim(),
 });
 
-export type LoginSchemaType = z.infer<typeof LoginSchema>;
+export const RegisterSchema = z.object({
+  type: z.literal("register"),
+  displayName: z.string().min(1, "Display name is required"),
+  email: z.email("Invalid email"),
+  phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(25),
+});
+
+export const UnionSchema = z.discriminatedUnion("type", [
+  LoginSchema,
+  RegisterSchema,
+]);
 
 export const ForgotPasswordSchema = z.object({
   email: z.email(),
 });
-
-export type ForgotPasswordSchemaType = z.infer<typeof ForgotPasswordSchema>;
 
 export const OtpVerificationSchema = z.object({
   otp: z.string().min(6, "OTP must be 6 digits"),
@@ -25,12 +33,6 @@ export const OtpVerificationSchema = z.object({
 export const OtpVerificationPhoneSchema = z.object({
   phoneNumber: phoneNumber(),
 });
-
-export type OtpVerificationPhoneSchemaType = z.infer<
-  typeof OtpVerificationPhoneSchema
->;
-
-export type OtpVerificationSchemaType = z.infer<typeof OtpVerificationSchema>;
 
 export const ResetPasswordSchema = z
   .object({
@@ -45,17 +47,11 @@ export const ResetPasswordSchema = z
   });
 
 export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
-
-export const RegisterSchema = z.object({
-  displayName: z.string().min(1, "Display name is required"),
-  email: z.email(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
-});
-
+export type UnionSchemaType = z.infer<typeof UnionSchema>;
+export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type RegisterSchemaType = z.infer<typeof RegisterSchema>;
-
-// export const registerSchema = z.object({
-//   email: z.string().email(),
-//   password: z.string().min(8),
-// });
+export type ForgotPasswordSchemaType = z.infer<typeof ForgotPasswordSchema>;
+export type OtpVerificationPhoneSchemaType = z.infer<
+  typeof OtpVerificationPhoneSchema
+>;
+export type OtpVerificationSchemaType = z.infer<typeof OtpVerificationSchema>;

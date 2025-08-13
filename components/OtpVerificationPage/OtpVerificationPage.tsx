@@ -12,9 +12,9 @@ import {
   OtpVerificationSchema,
   OtpVerificationSchemaType,
 } from "@/lib/schema/schema";
-import { cn, MaskPhoneNumberMiddle } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle } from "lucide-react";
+import { BadgeCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -24,7 +24,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "../ui/form";
 
@@ -73,7 +72,7 @@ const OtpVerificationForm = ({
       }
 
       toast.success("OTP sent successfully!");
-      setIsVerified(true);
+
       setCountdown(30);
     } catch {
       toast.error("Failed to send OTP");
@@ -85,8 +84,6 @@ const OtpVerificationForm = ({
       const { error } = await authClient.phoneNumber.verify({
         phoneNumber: user?.phoneNumber ?? "",
         code: data.otp,
-        disableSession: false,
-        updatePhoneNumber: true,
       });
 
       if (error) {
@@ -96,6 +93,7 @@ const OtpVerificationForm = ({
 
       toast.success("Phone number verified successfully");
 
+      setIsVerified(true);
       reset();
       setCountdown(0);
     } catch {
@@ -109,9 +107,10 @@ const OtpVerificationForm = ({
         cta="Next"
         redirectTo="/onboarding"
         title="Your phone number has been verified"
+        description="You can now continue to the next step"
         isOpen={isVerified}
         onOpenChange={setIsVerified}
-        Icon={<CheckCircle className="size-24 text-primary" />}
+        Icon={<BadgeCheck className="size-24 text-primary" />}
       />
     );
   }
@@ -119,60 +118,70 @@ const OtpVerificationForm = ({
   return (
     <Form {...form}>
       <form
-        className={cn("flex flex-col justify-center h-full gap-6", className)}
+        className={cn(
+          "flex flex-col justify-between h-full gap-6 py-6",
+          className
+        )}
         onSubmit={handleSubmit((data) => handleOtpSubmit(data))}
         {...props}
       >
         <div className="flex flex-col items-center gap-2 text-center">
-          <h2>Verify your phone number</h2>
+          <h1 className="fixed z-50 top-16 -translate-y-1/2 text-logo">
+            roomey.
+          </h1>
         </div>
 
-        <FormField
-          control={control}
-          name="otp"
-          render={({ field }) => (
-            <FormItem className="max-w-2xl mx-auto flex flex-col items-center justify-center">
-              <FormLabel className="text-center">
-                We&apos;ve sent you an OTP to your phone number{" "}
-                {MaskPhoneNumberMiddle(user?.phoneNumber ?? "")}. Please verify
-                to continue.
-              </FormLabel>
-              <FormControl>
-                <InputOTP maxLength={6} {...field}>
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                  </InputOTPGroup>
-                  <InputOTPGroup>
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex flex-col gap-2 text-center">
+          <div className="flex flex-col items-center gap-6 text-center">
+            <h3>Your email has been verified</h3>
+            <h3 className="font-normal">Check your SMS for the 6-digit code</h3>
+          </div>
+
+          <FormField
+            control={control}
+            name="otp"
+            render={({ field }) => (
+              <FormItem className="max-w-2xl mx-auto flex flex-col items-center justify-center">
+                <FormControl>
+                  <InputOTP maxLength={6} {...field}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                    </InputOTPGroup>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex flex-col items-center gap-2 text-center">
+            <p>Did not receive code?</p>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              onClick={handleSendOtp}
+            >
+              RESEND {countdown !== 0 && `in ${countdown} sec`}
+            </Button>
+          </div>
+        </div>
 
         <div className="mt-4 space-y-2">
-          <Button
-            size="lg"
-            type="button"
-            className="w-full text-lg"
-            disabled={isSubmitting || countdown > 0}
-            onClick={handleSendOtp}
-          >
-            {countdown > 0 ? `Resend OTP in ${countdown}s` : "Resend OTP"}
-          </Button>
           <Button
             size="lg"
             type="submit"
             className="w-full text-lg"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Verifying..." : "Verify OTP"}
+            {isSubmitting ? "Verifying..." : "Verify Number"}
           </Button>
         </div>
       </form>

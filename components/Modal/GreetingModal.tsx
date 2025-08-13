@@ -29,7 +29,7 @@ const GreetingModal = ({
 }: GreetingModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full flex flex-col justify-center min-h-screen m-0 px-4 max-w-full rounded-none">
+      <DialogContent className="w-full flex flex-col justify-center min-h-screen m-0 px-4 max-w-full sm:max-w-full rounded-none">
         <DialogHeader className="flex flex-col items-center justify-center gap-4 text-center mb-8">
           <div className="mb-4">
             <h1>roomey.</h1>

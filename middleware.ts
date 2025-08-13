@@ -7,55 +7,75 @@ import { Rule } from "./lib/type";
 
 export async function middleware(request: NextRequest) {
   const { pathname, origin } = request.nextUrl;
-
   const session = await getServerSession();
-  const roleSlug = getRoleSlug(session?.user?.role as string | undefined) || "";
-  const isAuthed = Boolean(session);
-  const isOnboarded = Boolean(session?.user?.user_is_onboarded);
-  const isPhoneVerified = Boolean(session?.user?.phoneNumberVerified);
+
+  const ctx = {
+    pathname,
+    origin,
+    isAuthed: Boolean(session),
+    roleSlug: getRoleSlug(session?.user?.role as string | undefined) || "",
+    isOnboarded: Boolean(session?.user?.user_is_onboarded),
+    isPhoneVerified: Boolean(session?.user?.phoneNumberVerified),
+    firstSeg: pathname.split("/")[1] ?? "",
+    atRoot: pathname === "/",
+    atOtp: OTP_ROUTE.includes(pathname),
+    atOnboarding: pathname.startsWith(ONBOARDING_ROUTE),
+    publicPath: isPublicPath(pathname),
+    roleScoped: isRolePath(pathname),
+  };
 
   const redirectTo = (path: string) =>
     NextResponse.redirect(urlOf(origin, path));
-  const firstSeg = pathname.split("/")[1] ?? "";
-  const atRoot = pathname === "/";
-  const atOtp = OTP_ROUTE.includes(pathname);
-  const atOnboarding = pathname.startsWith(ONBOARDING_ROUTE);
-  const publicPath = isPublicPath(pathname);
-  const roleScoped = isRolePath(pathname);
 
   const rules: Rule[] = [
     {
-      when: atRoot,
-      to: () => (isAuthed && roleSlug ? `/${roleSlug}/dashboard` : "/login"),
+      when: ctx.atRoot,
+      to: () =>
+        ctx.isAuthed && ctx.roleSlug ? `/${ctx.roleSlug}/dashboard` : "/auth",
     },
-    { when: isAuthed && !isPhoneVerified && !atOtp, to: () => OTP_ROUTE[0] },
     {
-      when: isAuthed && isPhoneVerified && !isOnboarded && !atOnboarding,
+      when: ctx.isAuthed && !ctx.isPhoneVerified && !ctx.atOtp,
+      to: () => OTP_ROUTE[0],
+    },
+    {
+      when:
+        ctx.isAuthed &&
+        ctx.isPhoneVerified &&
+        !ctx.isOnboarded &&
+        !ctx.atOnboarding,
       to: () => ONBOARDING_ROUTE,
     },
     {
-      when: isAuthed && isOnboarded && atOnboarding && !!roleSlug,
-      to: () => `/${roleSlug}/dashboard`,
+      when:
+        ctx.isAuthed && ctx.isOnboarded && ctx.atOnboarding && !!ctx.roleSlug,
+      to: () => `/${ctx.roleSlug}/dashboard`,
     },
     {
-      when: publicPath && isAuthed && !!roleSlug,
-      to: () => `/${roleSlug}/dashboard`,
+      when: ctx.publicPath && ctx.isAuthed && !!ctx.roleSlug,
+      to: () => `/${ctx.roleSlug}/dashboard`,
     },
-    { when: roleScoped && !isAuthed, to: () => "/login" },
+    { when: ctx.roleScoped && !ctx.isAuthed, to: () => "/auth" },
     {
-      when: isAuthed && !!roleSlug && roleScoped && firstSeg !== roleSlug,
-      to: () => `/${roleSlug}/dashboard`,
+      when:
+        ctx.isAuthed &&
+        !!ctx.roleSlug &&
+        ctx.roleScoped &&
+        ctx.firstSeg !== ctx.roleSlug,
+      to: () => `/${ctx.roleSlug}/dashboard`,
     },
   ];
 
   const match = rules.find((r) => r.when);
-  if (match) return redirectTo(match.to());
+  if (match) {
+    const target = match.to();
+    if (pathname !== target) return redirectTo(target);
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    // everything except next static assets, image optimizer, common static files, and API routes
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

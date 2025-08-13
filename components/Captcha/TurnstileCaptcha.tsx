@@ -43,7 +43,7 @@ const Captcha = forwardRef<CaptchaApi, Props>(function Captcha(
     <Turnstile
       key={widgetKey}
       sitekey={siteKey}
-      size="flexible"
+      size="invisible"
       theme="light"
       onVerify={(t) => {
         setToken(t);
