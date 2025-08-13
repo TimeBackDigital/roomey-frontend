@@ -1,5 +1,7 @@
+import RootLayoutProvider from "@/components/Providers/RootLayoutProvider";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,7 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="light">
       <body className={`${geistSans.variable} antialiased`}>
-        <main>{children}</main>
+        <RootLayoutProvider>
+          <main>{children}</main>
+        </RootLayoutProvider>
+        <Toaster
+          toastOptions={{
+            duration: 3000,
+            position: "top-right",
+          }}
+        />
       </body>
     </html>
   );

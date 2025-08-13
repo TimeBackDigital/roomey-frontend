@@ -1,4 +1,5 @@
 import getServerSession from "@/lib/auth/server-session";
+import { redirect } from "next/navigation";
 import React from "react";
 
 type LayoutProps = {
@@ -8,10 +9,12 @@ type LayoutProps = {
 const AppLayout = async ({ children }: LayoutProps) => {
   const session = await getServerSession();
 
+  if (!session) {
+    return redirect("/login");
+  }
+
   return (
     <div className="relative p-10">
-      {" "}
-      {/* no min-h-screen */}
       <header className="mb-6 text-xl font-bold capitalize">
         {session?.user.role} Dashboard
       </header>

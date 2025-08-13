@@ -14,7 +14,6 @@ const getServerSession = async (): Promise<typeof Session | null> => {
 
     return res.json();
   } catch (error) {
-    console.error(error);
     return null;
   }
 };

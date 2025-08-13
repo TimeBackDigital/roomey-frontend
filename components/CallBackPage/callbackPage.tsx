@@ -1,22 +1,30 @@
 "use client";
 
-import { useSession } from "@/lib/auth/auth-client";
-import { Role } from "@/lib/enum";
+import { useCurrentUser } from "@/hooks/getUserHook";
+import { getRoleSegment } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const CallbackPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+
+  const { data: session } = useCurrentUser();
+
+  const target = useMemo(() => {
+    if (session === undefined) return null;
+
+    if (!session) return "/login";
+
+    if (!session.user_phone_number_verified) return "/otp-verification";
+
+    const roleSegment = getRoleSegment(session?.role);
+    return roleSegment ? `/${roleSegment}/dashboard` : "/dashboard";
+  }, [session]);
 
   useEffect(() => {
-    if (!session) {
-      router.push("/login");
-    }
-
-    const roleKey = session?.user.role as keyof typeof Role;
-    router.push(`/${Role[roleKey]}/dashboard`);
-  }, [session]);
+    if (!target) return;
+    router.replace(target);
+  }, [router, target]);
 
   return null;
 };

@@ -1,8 +1,6 @@
-export const Role = {
+export const ROLE_SLUG = {
   admin: "s",
   agency: "a",
   seeker: "m",
   lister: "l",
 } as const;
-
-export type Role = (typeof Role)[keyof typeof Role];

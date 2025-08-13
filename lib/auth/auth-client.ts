@@ -2,13 +2,15 @@ import { stripeClient } from "@better-auth/stripe/client";
 import {
   adminClient,
   emailOTPClient,
+  inferAdditionalFields,
   magicLinkClient,
+  phoneNumberClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { ac, admin, agency, lister, seeker } from "./permission";
 
 export const authClient = createAuthClient({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL!}/api/auth`,
+  baseURL: `${process.env.NEXT_PUBLIC_APP_URL!}/api/auth`,
   fetchOptions: {
     credentials: "include",
     redirect: "follow",
@@ -23,10 +25,27 @@ export const authClient = createAuthClient({
         lister,
       },
     }),
+    phoneNumberClient(),
     emailOTPClient(),
     magicLinkClient(),
     stripeClient({
       subscription: true,
+    }),
+    inferAdditionalFields({
+      user: {
+        user_is_onboarded: {
+          type: "boolean",
+          default: false,
+        },
+        user_phone_number: {
+          type: "string",
+          default: null,
+        },
+        user_phone_number_verified: {
+          type: "boolean",
+          default: false,
+        },
+      },
     }),
   ],
 });
@@ -36,6 +55,7 @@ export const {
   signOut,
   signUp,
   useSession,
+  getSession,
   emailOtp,
   stripe,
   subscription,

@@ -2,152 +2,214 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { signUp } from "@/lib/auth/auth-client";
+import { authClient, signIn, signUp } from "@/lib/auth/auth-client";
+import { providers } from "@/lib/constant";
+import { RegisterSchema, RegisterSchemaType } from "@/lib/schema/schema";
+import { CaptchaApi } from "@/lib/type";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Lock, Mail, Phone, User } from "lucide-react";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import Captcha from "../Captcha/TurnstileCaptcha";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../ui/form";
+import { Separator } from "../ui/separator";
 
-type RegisterFormInputs = {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
-
-export function RegisterForm({
+const RegisterForm = ({
   className,
   ...props
-}: React.ComponentProps<"form">) {
-  const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterFormInputs>({
+}: React.ComponentProps<"form">) => {
+  const captchaRef = useRef<CaptchaApi>(null);
+
+  const form = useForm<RegisterSchemaType>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      name: "",
+      displayName: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      phoneNumber: "",
     },
   });
 
-  const onSubmit = async (formData: RegisterFormInputs) => {
-    try {
-      const { email, password, name } = formData;
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { isSubmitting },
+  } = form;
 
-      await signUp.email(
-        {
-          email,
-          password,
-          name,
-          callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
-        },
-        {
-          onResponse: () => {
-            router.push("/");
+  const onSubmit = async (formData: RegisterSchemaType) => {
+    try {
+      const { displayName, email, password, phoneNumber } = formData;
+
+      const token = await captchaRef.current!.getFreshToken();
+
+      const { error } = await signUp.email({
+        name: displayName,
+        email,
+        password,
+        user_phone_number: phoneNumber,
+        user_phone_number_verified: false,
+        user_is_onboarded: false,
+        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/email-verification`,
+        fetchOptions: {
+          headers: {
+            "x-captcha-response": token ?? "",
           },
-        }
-      );
+          onSuccess: async () => {
+            await authClient.phoneNumber.sendOtp({
+              phoneNumber: phoneNumber,
+            });
+            reset();
+          },
+        },
+      });
+
+      if (error) {
+        toast.error(error.message ?? "Failed to create account");
+        return;
+      }
+
+      toast.success("Account created successfully, please verify your email");
     } catch (err) {
-    } finally {
+      toast.error("Failed to create account");
     }
   };
 
+  const handleSignInSocial = async (type: "google" | "apple") => {
+    await signIn.social({
+      provider: type,
+      callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
+    });
+  };
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      onSubmit={handleSubmit(onSubmit)}
-      {...props}
-    >
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Register your account</h1>
-        <p className="text-muted-foreground text-sm text-balance">
-          Enter your email below to register your account
-        </p>
-      </div>
-      <div className="grid gap-6">
-        <div className="grid gap-3">
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="John Doe"
-            {...register("name", { required: "Name is required" })}
-          />
-          {errors.name && (
-            <p className="text-sm text-red-500">{errors.name.message}</p>
-          )}
-        </div>
-        <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            {...register("email", { required: "Email is required" })}
-          />
-          {errors.email && (
-            <p className="text-sm text-red-500">{errors.email.message}</p>
-          )}
-        </div>
+    <Form {...form}>
+      <form
+        className={cn("flex flex-col justify-center gap-6 h-full", className)}
+        onSubmit={handleSubmit(onSubmit)}
+        {...props}
+      >
+        <div className="flex-1 flex flex-col justify-center gap-4">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h3>Create account</h3>
+          </div>
 
-        <div className="grid gap-3">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="********"
-            {...register("password", { required: "Password is required" })}
-          />
-          {errors.password && (
-            <p className="text-sm text-red-500">{errors.password.message}</p>
-          )}
-        </div>
+          {providers(handleSignInSocial).map((provider) => (
+            <Button
+              key={provider.name}
+              onClick={provider.onClick}
+              iconLeft={provider.icon}
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full font-normal"
+            >
+              Sign in with {provider.name}
+            </Button>
+          ))}
 
-        <div className="grid gap-3">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            placeholder="********"
-            {...register("confirmPassword", {
-              required: "Confirm password is required",
-            })}
-          />
-          {errors.password && (
-            <p className="text-sm text-red-500">{errors.password.message}</p>
-          )}
-        </div>
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-          <span className="bg-background text-muted-foreground relative z-10 px-2">
-            Or continue with
-          </span>
-        </div>
-        <Button variant="outline" className="w-full">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            className="h-5 w-5 mr-2"
-          >
-            <path
-              d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-              fill="currentColor"
+          <Separator label="or" />
+
+          <div className="grid gap-4">
+            <FormField
+              control={control}
+              name="displayName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      icon={<User className="size-5" />}
+                      id="displayName"
+                      type="text"
+                      placeholder="John Doe"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </svg>
-          Login with GitHub
-        </Button>
-      </div>
-      <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <a href="#" className="underline underline-offset-4">
-          Sign up
-        </a>
-      </div>
-    </form>
+            <FormField
+              control={control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      icon={<Mail className="size-5" />}
+                      id="email"
+                      type="email"
+                      placeholder="m@example.com"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      icon={<Phone className="size-4" />}
+                      id="phoneNumber"
+                      type="text"
+                      placeholder="Phone Number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      icon={<Lock className="size-4" />}
+                      id="password"
+                      type="password"
+                      placeholder="********"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <Captcha ref={captchaRef} />
+        </div>
+
+        <div className="mt-auto my-10 space-y-2">
+          <Button
+            size="lg"
+            type="submit"
+            className="w-full text-lg"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Creating..." : "Create account"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
-}
+};
+
+export default RegisterForm;
