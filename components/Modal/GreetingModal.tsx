@@ -13,9 +13,9 @@ type GreetingModalProps = {
   description?: string;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  Icon: React.ReactNode;
-  cta: string;
-  redirectTo: string;
+  Icon?: React.ReactNode;
+  cta?: string;
+  redirectTo?: string;
 };
 
 const GreetingModal = ({
@@ -31,25 +31,25 @@ const GreetingModal = ({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="w-full flex flex-col justify-center min-h-screen m-0 px-4 max-w-full sm:max-w-full rounded-none">
         <DialogHeader className="flex flex-col items-center justify-center gap-4 text-center mb-8">
-          <div className="mb-4">
-            <h1>roomey.</h1>
+          <div className="mb-4 fixed top-16 -translate-y-1/2">
+            <h1 className="text-logo">roomey.</h1>
           </div>
-          <div className="flex items-center gap-2">{Icon}</div>
-          <DialogTitle className="text-xl font-bold text-primary">
-            {title}
-          </DialogTitle>
+          {Icon && <div className="flex items-center gap-2">{Icon}</div>}
+          <DialogTitle className="text-sub-heading ">{title}</DialogTitle>
 
           {description && (
-            <DialogDescription className="text-primary">
+            <DialogDescription className=" text-secondary text-md font-semibold">
               {description}
             </DialogDescription>
           )}
         </DialogHeader>
-        <Link href={redirectTo}>
-          <Button size="lg" className="w-full text-lg">
-            {cta}
-          </Button>
-        </Link>
+        {redirectTo && (
+          <Link href={redirectTo}>
+            <Button size="lg" className="w-full text-lg">
+              {cta}
+            </Button>
+          </Link>
+        )}
       </DialogContent>
     </Dialog>
   );

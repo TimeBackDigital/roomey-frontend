@@ -31,3 +31,7 @@ export const NormalizePhone = (raw: string) => {
   else if (!d.startsWith("63")) d = `63${d}`;
   return `+${d}`;
 };
+
+export const getRoleDashboard = (role: string) => {
+  return role === "admin" ? "/admin/dashboard" : `/${role}/dashboard`;
+};

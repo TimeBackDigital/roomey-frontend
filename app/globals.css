@@ -46,6 +46,7 @@
 :root {
   --radius: 0.625rem;
   --background: #fafafa;
+  --background-secondary: #f5f5f5;
   --foreground: oklch(0.145 0 0); /* text black */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -110,7 +111,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  
+
 }
 
 @layer base {
@@ -129,12 +130,19 @@
   h3{
     @apply text-[16px] font-[700];
   }
+  p{
+    @apply text-[#414B57];
+  }
+
+  .text-sub-heading {
+    @apply text-[16px] font-bold;
+  }
 
   .text-logo {
     @apply text-4xl font-bold text-[#414b57];
   }
   .container {
-    @apply px-4 py-6;
+    @apply px-4 py-6 min-w-full;
   }
 
 }

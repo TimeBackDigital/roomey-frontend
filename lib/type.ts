@@ -2,7 +2,7 @@ import { ROLE_SLUG } from "./enum";
 
 export type RoleKey = keyof typeof ROLE_SLUG;
 
-export type Rule = { when: boolean; to: () => string };
+export type Rule = { name: string; when: boolean; to: () => string };
 
 export type SignInError = {
   error: {
@@ -18,3 +18,52 @@ export type CaptchaApi = {
 };
 
 export type AuthFormType = "login" | "register";
+
+export type OnboardingStep = {
+  id: string;
+  title: string;
+  description?: string;
+  fields?: {
+    name: string;
+    label: string;
+    type: "text" | "email" | "password" | "file" | "checkbox" | "select";
+    required?: boolean;
+    placeholder?: string;
+    options?: string[];
+  }[];
+  actions?: {
+    label: string;
+    type: "next" | "submit" | "skip";
+  }[];
+};
+
+export type OnboardingSchema = {
+  role: RoleKey;
+  steps: OnboardingStep[];
+};
+
+export type FieldOption = {
+  label: string;
+  value: string;
+};
+
+export type FieldConfig = {
+  name: string;
+  label: string;
+  placeholder?: string;
+  title?: string;
+  description?: string;
+  type?:
+    | "text"
+    | "email"
+    | "password"
+    | "checkbox"
+    | "textarea"
+    | "number"
+    | "date"
+    | "file"
+    | "select"
+    | "profile_photo"
+    | "checkbox_agreement";
+  options?: FieldOption[];
+};

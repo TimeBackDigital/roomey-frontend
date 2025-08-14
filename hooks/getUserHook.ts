@@ -18,7 +18,7 @@ export const useSessionQuery = () => {
 export const useCurrentUser = () => {
   return useQuery({
     queryKey: ["session"],
-    queryFn: getSession, // same fetcher, same key -> single network call, shared cache
+    queryFn: getSession,
     select: (session) => session?.data?.user ?? null,
     staleTime: 5 * 60_000,
     gcTime: 30 * 60_000,

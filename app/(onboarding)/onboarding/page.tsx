@@ -1,5 +1,7 @@
-const page = async () => {
-  return <div>OnboardingPage</div>;
+import OnboardingPage from "@/components/OnboardingPage/OnboardingPage";
+
+const page = () => {
+  return <OnboardingPage />;
 };
 
 export default page;

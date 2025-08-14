@@ -37,7 +37,7 @@ export const authClient = createAuthClient({
           type: "boolean",
           default: false,
         },
-        phoneNumber: {
+        user_phone_number: {
           type: "string",
           default: null,
         },

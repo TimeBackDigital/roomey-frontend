@@ -43,7 +43,8 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
   };
 
   const [formType, setFormType] = useState<AuthFormType | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   const form = useForm<UnionSchemaType>({
     resolver: zodResolver(UnionSchema),
@@ -81,12 +82,11 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
               if (error.error.code === "EMAIL_NOT_VERIFIED") {
                 await signIn.magicLink({
                   email: identifier,
-                  callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/email-verification`,
+                  callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
                 });
-                toast.success("Please check your email for verification");
               }
             },
-            onSuccess: async () => setIsOpen(true),
+            onSuccess: async () => setIsLoggedIn(true),
           },
         });
 
@@ -104,6 +104,10 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
       const { error } = await authClient.signIn.phoneNumber({
         phoneNumber: phone,
         password: password,
+        fetchOptions: {
+          headers: { "x-captcha-response": token ?? "" },
+          onSuccess: async () => setIsLoggedIn(true),
+        },
       });
 
       if (error) {
@@ -127,10 +131,10 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         name: displayName,
         email,
         password,
-        phoneNumber: NormalizePhone(phoneNumber),
+        user_phone_number: NormalizePhone(phoneNumber),
         phoneNumberVerified: false,
         user_is_onboarded: false,
-        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/email-verification`,
+        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/otp-verification`,
         fetchOptions: {
           headers: {
             "x-captcha-response": token ?? "",
@@ -140,6 +144,8 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
               phoneNumber: phoneNumber,
             });
             reset();
+
+            setIsRegistered(true);
           },
         },
       });
@@ -148,8 +154,6 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         toast.error(error.message ?? "Failed to create account");
         return;
       }
-
-      toast.success("Account created successfully, please verify your email");
     } catch (err) {
       toast.error("Failed to create account");
     }
@@ -172,15 +176,28 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
     setFormType(type);
   };
 
-  if (isOpen) {
+  if (isLoggedIn) {
     return (
       <GreetingModal
         title="You're Logged in"
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
+        isOpen={isLoggedIn}
+        onOpenChange={setIsLoggedIn}
         Icon={<BadgeCheck className="size-24 text-primary" />}
         cta="Start exploring"
         redirectTo="/callback"
+      />
+    );
+  }
+
+  if (isRegistered) {
+    return (
+      <GreetingModal
+        title="Your email has been Sent!"
+        description="Please check your inbox for the link!"
+        isOpen={isRegistered}
+        onOpenChange={setIsRegistered}
+        // cta="Start exploring"
+        // redirectTo="/callback"
       />
     );
   }
