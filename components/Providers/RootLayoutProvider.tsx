@@ -2,12 +2,13 @@
 "use client";
 
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
+import { useSession } from "@/lib/auth/auth-client";
 import {
   isServer,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import UserProvider from "./UserProvider";
+import { Session } from "better-auth";
 
 const makeQueryClient = () => {
   return new QueryClient({
@@ -30,15 +31,18 @@ const getQueryClient = () => {
   }
 };
 
-const RootLayoutProvider = ({ children }: { children: React.ReactNode }) => {
+const RootLayoutProvider = ({
+  children,
+  initialSession,
+}: {
+  children: React.ReactNode;
+  initialSession: Session;
+}) => {
   const queryClient = getQueryClient();
-
-  // queryClient.setQueryData(["session"], initialSession);
+  useSession(initialSession);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <UserProvider>{children}</UserProvider>
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
 

@@ -2,13 +2,13 @@
 
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import OnboardingNavigation from "@/components/Navigation/OnboardingNavigation/OnboardingNavigation";
-import { useSessionQuery } from "@/hooks/getUserHook";
+import { useSession } from "@/lib/auth/auth-client";
 import { ExtractFirstLetterRole } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import React from "react";
 
 const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
-  const { data: user } = useSessionQuery();
+  const { data: user } = useSession();
 
   if (!user) {
     return redirect("/auth");

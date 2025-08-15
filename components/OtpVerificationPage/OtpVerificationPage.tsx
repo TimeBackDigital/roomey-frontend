@@ -6,8 +6,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useCurrentUser } from "@/hooks/getUserHook";
-import { authClient } from "@/lib/auth/auth-client";
+import { authClient, useSession } from "@/lib/auth/auth-client";
 import {
   OtpVerificationSchema,
   OtpVerificationSchemaType,
@@ -34,7 +33,7 @@ const OtpVerificationForm = ({
   const [countdown, setCountdown] = useState(0);
   const [isVerified, setIsVerified] = useState(false);
 
-  const { data: user } = useCurrentUser();
+  const { data: user } = useSession();
 
   const form = useForm<OtpVerificationSchemaType>({
     resolver: zodResolver(OtpVerificationSchema),
@@ -63,7 +62,7 @@ const OtpVerificationForm = ({
 
     try {
       const { error } = await authClient.phoneNumber.sendOtp({
-        phoneNumber: user?.phoneNumber ?? "",
+        phoneNumber: user?.user.user_phone_number ?? "",
       });
 
       if (error) {
@@ -82,7 +81,7 @@ const OtpVerificationForm = ({
   const handleOtpSubmit = async (data: OtpVerificationSchemaType) => {
     try {
       const { error } = await authClient.phoneNumber.verify({
-        phoneNumber: user?.phoneNumber ?? "",
+        phoneNumber: user?.user.user_phone_number ?? "",
         code: data.otp,
       });
 

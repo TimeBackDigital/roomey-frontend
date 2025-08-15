@@ -1,4 +1,6 @@
 import RootLayoutProvider from "@/components/Providers/RootLayoutProvider";
+import getServerSession from "@/lib/auth/server-session";
+import { Session } from "better-auth";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Toaster } from "react-hot-toast";
@@ -33,10 +35,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession();
+
   return (
     <html lang="en" className="light">
       <body className={`${geistSans.variable} antialiased`}>
-        <RootLayoutProvider>
+        <RootLayoutProvider initialSession={session as unknown as Session}>
           <main>{children}</main>
         </RootLayoutProvider>
         <Toaster
