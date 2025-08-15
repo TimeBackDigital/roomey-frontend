@@ -36,6 +36,15 @@
     COPY --from=builder /app/public ./public
     # (optional) copy next config if your start script relies on it
     # COPY --from=builder /app/next.config.js ./next.config.js
+    ARG NEXT_PUBLIC_APP_URL
+    ARG API_URL
+    ARG NEXT_PUBLIC_API_URL
+    ARG NEXT_PUBLIC_SITE_KEY
+
+    ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+    ENV API_URL=${API_URL}
+    ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    ENV NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}    
     
     USER nextjs
     EXPOSE 3000

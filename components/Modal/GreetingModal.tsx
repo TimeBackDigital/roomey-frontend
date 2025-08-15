@@ -35,10 +35,12 @@ const GreetingModal = ({
             <h1 className="text-logo">roomey.</h1>
           </div>
           {Icon && <div className="flex items-center gap-2">{Icon}</div>}
-          <DialogTitle className="text-sub-heading ">{title}</DialogTitle>
+          <DialogTitle className="text-sub-heading font-bold">
+            {title}
+          </DialogTitle>
 
           {description && (
-            <DialogDescription className=" text-secondary text-md font-semibold">
+            <DialogDescription className=" text-secondary text-md font-semibold w-60">
               {description}
             </DialogDescription>
           )}

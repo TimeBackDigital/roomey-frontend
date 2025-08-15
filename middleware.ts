@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
     isAuthed: Boolean(session),
     userRole: session?.user?.role as string | undefined,
     roleSlug: getRoleSlug(session?.user?.role as string | undefined) || "",
-    isOnboarded: Boolean(session?.user?.user_is_onboarded),
+    isOnboarded: Boolean(session?.user?.user_is_onboarded ),
     isPhoneVerified: Boolean(session?.user?.phoneNumberVerified),
     firstSeg,
     atRoot: pathname === "/",

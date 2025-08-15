@@ -102,7 +102,8 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
       const phone = NormalizePhone(identifier);
 
       const { error } = await authClient.signIn.phoneNumber({
-        phoneNumber: phone,
+        phoneNumber:
+          process.env.NODE_ENV === "development" ? "+18777804236" : phone,
         password: password,
         fetchOptions: {
           headers: { "x-captcha-response": token ?? "" },
@@ -131,7 +132,10 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         name: displayName,
         email,
         password,
-        user_phone_number: NormalizePhone(phoneNumber),
+        user_phone_number:
+          process.env.NODE_ENV === "development"
+            ? "+18777804236"
+            : NormalizePhone(phoneNumber),
         user_is_onboarded: false,
         callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/otp-verification`,
         fetchOptions: {
@@ -191,8 +195,8 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
   if (isRegistered) {
     return (
       <GreetingModal
-        title="Your email has been Sent!"
-        description="Please check your inbox for the link!"
+        title="Check your inbox"
+        description="We've sent you a magic link.  click it to continue"
         isOpen={isRegistered}
         onOpenChange={setIsRegistered}
         // cta="Start exploring"
