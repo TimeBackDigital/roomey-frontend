@@ -132,7 +132,6 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         email,
         password,
         user_phone_number: NormalizePhone(phoneNumber),
-        phoneNumberVerified: false,
         user_is_onboarded: false,
         callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/otp-verification`,
         fetchOptions: {

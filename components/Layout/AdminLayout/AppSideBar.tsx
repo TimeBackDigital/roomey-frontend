@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/sidebar";
 import * as React from "react";
 
-// This is sample data.
 const data = {
   navMain: [
     {
@@ -39,7 +38,7 @@ const data = {
         },
         {
           title: "User Control",
-          url: "/g/user/list",
+          url: "/g/user-control",
         },
         {
           title: "Reports",

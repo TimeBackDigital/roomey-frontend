@@ -87,6 +87,39 @@ export const schemaByRole = {
   },
 };
 
+const AdminModalSchema = z.object({
+  action: z
+    .literal("promote")
+    .or(z.literal("changePassword").or(z.literal("ban"))),
+  userId: z.string().min(1, "User ID is required"),
+  role: z.string().optional(),
+  newPassword: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .optional(),
+});
+
+const CreateUserSchema = z
+  .object({
+    action: z.literal("createUser"),
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export const AdminMOdalFormSchema = z.discriminatedUnion("action", [
+  AdminModalSchema,
+  CreateUserSchema,
+]);
+
+export type AdminFormValues = z.infer<typeof AdminMOdalFormSchema>;
 export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
 export type UnionSchemaType = z.infer<typeof UnionSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;

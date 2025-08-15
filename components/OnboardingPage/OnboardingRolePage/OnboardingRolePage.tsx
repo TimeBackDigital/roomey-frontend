@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useSession } from "@/lib/auth/auth-client";
 import { schemaByRole } from "@/lib/schema/schema";
 import { RoleKey } from "@/lib/type";
 import ImageService from "@/services/image/image.service";
@@ -30,6 +31,8 @@ type Props = {
 export default function OnboardingRolePage({ role }: Props) {
   const [step, setStep] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+
+  const { refetch } = useSession();
 
   const totalSteps = schemaByRole[role as keyof typeof schemaByRole].totalSteps;
   const isLastStep = step === totalSteps - 1;
@@ -62,15 +65,14 @@ export default function OnboardingRolePage({ role }: Props) {
     try {
       await OnboardingService.createOnboarding({
         role,
-        data: {
-          ...formData,
-          ...(role === "seeker" && {
-            allowMarketing: formData.allowMarketing,
-            allowVerification: formData.allowVerification,
-          }),
-          profilePhoto: image.url,
-        },
+        ...(role === "seeker" && {
+          allowMarketing: formData.allowMarketing,
+          allowVerification: formData.allowVerification,
+        }),
+        profilePhoto: image.url,
       });
+
+      await refetch();
     } catch (e) {
       await ImageService.deleteImage(image.public_id);
     }

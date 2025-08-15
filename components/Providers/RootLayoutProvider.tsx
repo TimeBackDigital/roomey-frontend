@@ -33,6 +33,8 @@ const getQueryClient = () => {
 const RootLayoutProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = getQueryClient();
 
+  // queryClient.setQueryData(["session"], initialSession);
+
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>{children}</UserProvider>

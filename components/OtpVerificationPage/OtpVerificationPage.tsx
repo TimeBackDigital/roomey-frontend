@@ -167,6 +167,7 @@ const OtpVerificationForm = ({
               type="button"
               variant="link"
               size="sm"
+              disabled={isSubmitting || countdown > 0}
               onClick={handleSendOtp}
             >
               RESEND {countdown !== 0 && `in ${countdown} sec`}

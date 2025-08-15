@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import { ROLE_SLUG } from "./enum";
 
@@ -34,4 +35,31 @@ export const NormalizePhone = (raw: string) => {
 
 export const getRoleDashboard = (role: string) => {
   return role === "admin" ? "/admin/dashboard" : `/${role}/dashboard`;
+};
+
+export const formatDate = (date: Date | undefined) => {
+  if (!date) {
+    return "";
+  }
+
+  return date.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+export const isValidDate = (date: Date | undefined) => {
+  if (!date) {
+    return false;
+  }
+  return !isNaN(date.getTime());
+};
+
+export const FormatDateTable = (date: Date | undefined) => {
+  return date ? format(date, "dd/MM/yyyy") : "";
+};
+
+export const CapitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };

@@ -67,3 +67,16 @@ export type FieldConfig = {
     | "checkbox_agreement";
   options?: FieldOption[];
 };
+
+export type UserListType = {
+  id: string;
+  user_name: string;
+  user_email: string;
+  user_role: string;
+  user_status: string;
+  user_is_active: string;
+  user_created_at: Date;
+  user_updated_at: Date;
+  user_last_login_at: Date;
+  user_ban_expires: Date;
+};

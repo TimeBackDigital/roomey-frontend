@@ -14,9 +14,11 @@ const LatestSegment = () => {
 
   if (!lastSegment) return <div>—</div>;
 
-  return (
-    <h2>{lastSegment.slice(0, 1).toUpperCase() + lastSegment.slice(1)}</h2>
-  );
+  const formattedSegment = lastSegment
+    .replace(/-/g, " ") // replace all dashes with spaces
+    .replace(/\b\w/g, (char) => char.toUpperCase()); // capitalize each word
+
+  return <h1>{formattedSegment}</h1>;
 };
 
 export default LatestSegment;

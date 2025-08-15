@@ -40,10 +40,12 @@ export const authClient = createAuthClient({
         user_phone_number: {
           type: "string",
           default: null,
+          required: false,
         },
-        phoneNumberVerified: {
+        user_phone_number_verified: {
           type: "boolean",
           default: false,
+          required: false,
         },
       },
     }),

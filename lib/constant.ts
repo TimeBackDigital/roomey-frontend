@@ -142,3 +142,48 @@ export const onboardingSchemas: OnboardingSchema[] = [
   listerOnboarding,
   agencyOnboarding,
 ];
+
+export const RoleList = [
+  {
+    label: "Admin",
+    value: "admin",
+  },
+  {
+    label: "Seeker",
+    value: "seeker",
+  },
+  {
+    label: "Lister",
+    value: "lister",
+  },
+  {
+    label: "Agency",
+    value: "agency",
+  },
+];
+
+export const AdminModalData: Record<
+  "promote" | "changePassword" | "ban" | "createUser",
+  { title: string; description: string; button: string }
+> = {
+  promote: {
+    title: "Promote User Role",
+    description: "Select a new role for this user.",
+    button: "Promote",
+  },
+  changePassword: {
+    title: "Change User Password",
+    description: "Enter a new password for this user.",
+    button: "Change Password",
+  },
+  ban: {
+    title: "Ban User",
+    description: "Are you sure you want to ban this user?",
+    button: "Ban",
+  },
+  createUser: {
+    title: "Create New User",
+    description: "Fill in the details to create a new account.",
+    button: "Create User",
+  },
+};
