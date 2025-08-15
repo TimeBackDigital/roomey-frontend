@@ -24,9 +24,6 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
     <>
       <OnboardingNavigation />
       <section className="container bg-background-secondary">
-        <div className="flex flex-col items-center gap-2 text-center mb-8">
-          <h2 className="text-logo">roomey.</h2>
-        </div>
         <ErrorBoundary>{children}</ErrorBoundary>
       </section>
     </>

@@ -13,11 +13,10 @@ import {
 } from "@/lib/schema/schema";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BadgeCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import GreetingModal from "../Modal/GreetingModal";
 import {
   Form,
   FormControl,
@@ -31,7 +30,8 @@ const OtpVerificationForm = ({
   ...props
 }: React.ComponentProps<"form">) => {
   const [countdown, setCountdown] = useState(0);
-  const [isVerified, setIsVerified] = useState(false);
+
+  const router = useRouter();
 
   const { data: user } = useSession();
 
@@ -92,27 +92,15 @@ const OtpVerificationForm = ({
 
       toast.success("Phone number verified successfully");
 
-      setIsVerified(true);
       reset();
+
+      router.push("/onboarding");
+
       setCountdown(0);
     } catch {
       toast.error("Failed to verify OTP");
     }
   };
-
-  if (isVerified) {
-    return (
-      <GreetingModal
-        cta="Next"
-        redirectTo="/onboarding"
-        title="Your phone number has been verified"
-        description="You can now continue to the next step"
-        isOpen={isVerified}
-        onOpenChange={setIsVerified}
-        Icon={<BadgeCheck className="size-24 text-primary" />}
-      />
-    );
-  }
 
   return (
     <Form {...form}>
@@ -132,8 +120,12 @@ const OtpVerificationForm = ({
 
         <div className="flex flex-col gap-2 text-center">
           <div className="flex flex-col items-center gap-6 text-center">
-            <h3>Your email has been verified</h3>
-            <h3 className="font-normal">Check your SMS for the 6-digit code</h3>
+            <h3>
+              Email Confirmed <span className="text-2xl">🎉</span>
+            </h3>
+            <h3 className="font-normal">
+              Enter the 6-digit code we sent to your phone
+            </h3>
           </div>
 
           <FormField
@@ -160,16 +152,17 @@ const OtpVerificationForm = ({
             )}
           />
 
-          <div className="flex flex-col items-center gap-2 text-center">
-            <p>Did not receive code?</p>
+          <div className="flex justify-center items-center gap-2 text-center">
+            <p>Didn&apos;t get it?</p>
             <Button
               type="button"
               variant="link"
+              className="p-0"
               size="sm"
               disabled={isSubmitting || countdown > 0}
               onClick={handleSendOtp}
             >
-              RESEND {countdown !== 0 && `in ${countdown} sec`}
+              Resend {countdown !== 0 && `in ${countdown} sec`}
             </Button>
           </div>
         </div>
@@ -181,7 +174,7 @@ const OtpVerificationForm = ({
             className="w-full text-lg"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Verifying..." : "Verify Number"}
+            {isSubmitting ? "Verifying..." : "Verify & Move In"}
           </Button>
         </div>
       </form>
