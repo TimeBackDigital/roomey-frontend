@@ -32,9 +32,6 @@ RUN npm install --omit=dev
 # Copy rest of the app
 COPY . .
 
-# Build Next.js
-RUN npm run build
-
 # Set runtime environment variables
 ARG NEXT_PUBLIC_APP_URL
 ARG API_URL
@@ -46,6 +43,9 @@ ENV API_URL=$API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SITE_KEY=$NEXT_PUBLIC_SITE_KEY
 ENV PORT=3000
+# Build Next.js
+RUN npm run build
+
 
 EXPOSE 3000
 
