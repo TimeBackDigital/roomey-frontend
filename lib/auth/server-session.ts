@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
-import { Session } from "./auth-client";
+import { Session as SessionResponse } from "./auth-client";
 
-const getServerSession = async (): Promise<typeof Session | null> => {
+const getServerSession = async (): Promise<typeof SessionResponse | null> => {
   try {
     const cookieHeader = (await cookies()).toString();
 
@@ -12,7 +12,7 @@ const getServerSession = async (): Promise<typeof Session | null> => {
       },
     });
 
-    return res.json();
+    return res.json() as Promise<typeof SessionResponse | null>;
   } catch (error) {
     return null;
   }

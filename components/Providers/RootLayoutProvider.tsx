@@ -2,11 +2,13 @@
 "use client";
 
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
+import { BetterUser } from "@/lib/type";
 import {
   isServer,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import { UserProvider } from "./AuthProvider";
 
 const makeQueryClient = () => {
   return new QueryClient({
@@ -29,11 +31,21 @@ const getQueryClient = () => {
   }
 };
 
-const RootLayoutProvider = ({ children }: { children: React.ReactNode }) => {
+const RootLayoutProvider = ({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: BetterUser;
+}) => {
   const queryClient = getQueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider user={user}>
+        <main>{children}</main>
+      </UserProvider>
+    </QueryClientProvider>
   );
 };
 
