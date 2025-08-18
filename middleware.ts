@@ -63,11 +63,7 @@ export async function middleware(request: NextRequest) {
 
     {
       name: "onboarding-complete",
-      when:
-        ctx.isAuthed &&
-        ctx.isOnboarded &&
-        ctx.atOnboarding &&
-        ctx.userRole !== "seeker",
+      when: ctx.isAuthed && ctx.isOnboarded && ctx.atOnboarding,
       to: () => `/${ctx.roleSlug}/dashboard`,
     },
 
