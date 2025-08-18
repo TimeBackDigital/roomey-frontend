@@ -8,7 +8,6 @@ const ONBOARDING_ROUTE = "/onboarding";
 const AUTH_ROUTE = "/auth";
 const PUBLIC_PATHS = ["/", "/auth", "/login", "/register", "/forgot-password"];
 
-// Helper functions
 const getRoleSlug = (role: string | undefined): string => {
   const roleMap: Record<string, string> = {
     admin: "g",
@@ -27,7 +26,6 @@ const urlOf = (origin: string, path: string): URL => {
   return new URL(path, origin);
 };
 
-// Rule type definition
 interface Rule {
   name: string;
   when: boolean;
@@ -45,8 +43,6 @@ export async function middleware(request: NextRequest) {
   const pathSegments = pathname.split("/").filter(Boolean);
   const firstSegment = pathSegments[0] ?? "";
 
-  console.log(session);
-  // Build context object with all necessary checks
   const ctx = {
     pathname,
     origin,
@@ -65,6 +61,7 @@ export async function middleware(request: NextRequest) {
     atListerPath: firstSegment === "l",
     atAdminPath: firstSegment === "g",
     isRoleProtectedPath: ["a", "l", "g"].includes(firstSegment),
+    isSeeker: session?.user?.role === "seeker",
   };
 
   const redirectTo = (path: string) => {
@@ -74,25 +71,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(urlOf(origin, path));
   };
 
-  // Define redirect rules in order of priority
   const rules: Rule[] = [
-    // Rule 1: Unauthenticated users trying to access protected routes
     {
       name: "auth-required-for-protected-routes",
       when: ctx.isRoleProtectedPath && !ctx.isAuthed,
       to: () => AUTH_ROUTE,
     },
-
-    // Rule 2: Authenticated users at auth pages should go to dashboard
     {
       name: "already-authenticated",
       when:
         ctx.isAuthed && ctx.atAuth && ctx.isPhoneVerified && ctx.isOnboarded,
-      to: () =>
-        ctx.userRole === "seeker" ? "/" : `/${ctx.roleSlug}/dashboard`,
+      to: () => {
+        // Seekers stay on public pages, others go to dashboard
+        if (ctx.isSeeker) {
+          return "/";
+        }
+        return `/${ctx.roleSlug}/dashboard`;
+      },
     },
-
-    // Rule 3: Phone verification required
     {
       name: "phone-verification-required",
       when:
@@ -103,74 +99,70 @@ export async function middleware(request: NextRequest) {
         !ctx.publicPath,
       to: () => OTP_ROUTE[0],
     },
-
-    // Rule 4: Onboarding required for non-seekers
     {
       name: "onboarding-required",
       when:
         ctx.isAuthed &&
-        ctx.userRole !== "seeker" &&
+        !ctx.isSeeker &&
         ctx.isPhoneVerified &&
         !ctx.isOnboarded &&
         !ctx.atOnboarding &&
         !ctx.atAuth,
       to: () => ONBOARDING_ROUTE,
     },
-
-    // Rule 5: Already onboarded users at onboarding page
     {
       name: "onboarding-already-complete",
       when:
-        ctx.isAuthed &&
-        ctx.isOnboarded &&
-        ctx.atOnboarding &&
-        ctx.userRole !== "seeker",
+        ctx.isAuthed && ctx.isOnboarded && ctx.atOnboarding && !ctx.isSeeker, // Only redirect non-seekers
       to: () => `/${ctx.roleSlug}/dashboard`,
     },
-
-    // Rule 6: Root redirect for authenticated users
     {
       name: "root-redirect-authenticated",
       when:
         ctx.atRoot &&
         ctx.isAuthed &&
         ctx.isPhoneVerified &&
-        ctx.userRole !== "seeker",
+        ctx.isOnboarded &&
+        !ctx.isSeeker, // Seekers can stay at root
       to: () => `/${ctx.roleSlug}/dashboard`,
     },
-
-    // Rule 7: Wrong role accessing agency paths
     {
       name: "agency-role-protection",
       when: ctx.atAgencyPath && ctx.isAuthed && ctx.userRole !== "agency",
-      to: () =>
-        ctx.userRole === "seeker" ? "/" : `/${ctx.roleSlug}/dashboard`,
+      to: () => {
+        if (ctx.isSeeker) {
+          return "/";
+        }
+        return `/${ctx.roleSlug}/dashboard`;
+      },
     },
-
-    // Rule 8: Wrong role accessing lister paths
     {
       name: "lister-role-protection",
       when: ctx.atListerPath && ctx.isAuthed && ctx.userRole !== "lister",
-      to: () =>
-        ctx.userRole === "seeker" ? "/" : `/${ctx.roleSlug}/dashboard`,
+      to: () => {
+        if (ctx.isSeeker) {
+          return "/";
+        }
+        return `/${ctx.roleSlug}/dashboard`;
+      },
     },
-
-    // Rule 9: Wrong role accessing admin paths
     {
       name: "admin-role-protection",
       when: ctx.atAdminPath && ctx.isAuthed && ctx.userRole !== "admin",
-      to: () =>
-        ctx.userRole === "seeker" ? "/" : `/${ctx.roleSlug}/dashboard`,
+      to: () => {
+        if (ctx.isSeeker) {
+          return "/";
+        }
+        return `/${ctx.roleSlug}/dashboard`;
+      },
     },
   ];
 
-  // Find the first matching rule
   const matchingRule = rules.find((rule) => rule.when);
 
   if (matchingRule) {
     const targetPath = matchingRule.to();
 
-    // Prevent redirect loops
     if (pathname !== targetPath) {
       if (process.env.NODE_ENV === "development") {
         console.log(`Applying rule: ${matchingRule.name}`, {
@@ -181,6 +173,7 @@ export async function middleware(request: NextRequest) {
             userRole: ctx.userRole,
             isPhoneVerified: ctx.isPhoneVerified,
             isOnboarded: ctx.isOnboarded,
+            isSeeker: ctx.isSeeker,
           },
         });
       }

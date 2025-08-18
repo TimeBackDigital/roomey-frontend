@@ -16,8 +16,7 @@ export const MaskPhoneNumberMiddle = (phoneNumber: string) => {
 };
 
 export const getRoleSegment = (role: unknown): string | undefined => {
-  if (typeof role === "string") return role;
-  if (role) return ROLE_SLUG[role as keyof typeof ROLE_SLUG];
+  if (role) return ROLE_SLUG[role as keyof typeof ROLE_SLUG] || "";
   return undefined;
 };
 

@@ -15,8 +15,8 @@ const CallbackPage = () => {
 
     if (!session.user.phoneNumberVerified) return "/otp-verification";
 
-    const roleSegment = getRoleSegment(session?.user?.role);
-    return roleSegment ? `/${roleSegment}/dashboard` : "/dashboard";
+    const roleSegment = getRoleSegment(session?.user?.role as string);
+    return roleSegment ? `/${roleSegment}/dashboard` : "/";
   }, [session]);
 
   useEffect(() => {
