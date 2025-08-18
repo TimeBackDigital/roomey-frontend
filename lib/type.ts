@@ -1,3 +1,4 @@
+import { User } from "better-auth";
 import { ROLE_SLUG } from "./enum";
 
 export type RoleKey = keyof typeof ROLE_SLUG;
@@ -79,4 +80,9 @@ export type UserListType = {
   user_updated_at: Date;
   user_last_login_at: Date;
   user_ban_expires: Date;
+};
+
+export type BetterUser = User & {
+  user_is_onboarded: boolean;
+  role: string;
 };

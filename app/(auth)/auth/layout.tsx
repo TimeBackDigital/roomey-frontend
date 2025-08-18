@@ -1,8 +1,17 @@
 "use client";
+
+import { useUser } from "@/components/Providers/AuthProvider";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import React from "react";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useUser();
+
+  if (user) {
+    return redirect("/");
+  }
+
   return (
     <div className="relative">
       <div className="flex flex-col items-center gap-2 text-center">
