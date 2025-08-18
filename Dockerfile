@@ -50,4 +50,4 @@ ENV PORT=3000
 EXPOSE 3000
 
 # Use Next.js production server
-CMD ["npm", "start"]
+CMD ["npm", "start:prod"]
