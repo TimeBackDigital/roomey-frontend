@@ -1,7 +1,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -11,6 +10,7 @@ import { Button } from "../ui/button";
 type GreetingModalProps = {
   title: string;
   description?: string;
+  secondaryDescription?: string;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   Icon?: React.ReactNode;
@@ -21,6 +21,7 @@ type GreetingModalProps = {
 const GreetingModal = ({
   title,
   description,
+  secondaryDescription,
   isOpen,
   onOpenChange,
   Icon,
@@ -40,9 +41,16 @@ const GreetingModal = ({
           </DialogTitle>
 
           {description && (
-            <DialogDescription className=" text-secondary text-md font-semibold w-60">
-              {description}
-            </DialogDescription>
+            <div>
+              <p className="text-center text-secondary text-md font-semibold w-60">
+                {description}
+              </p>
+              {secondaryDescription && (
+                <p className=" text-secondary text-center text-md font-semibold w-60">
+                  {secondaryDescription}
+                </p>
+              )}
+            </div>
           )}
         </DialogHeader>
         {redirectTo && (

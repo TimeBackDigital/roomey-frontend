@@ -14,7 +14,7 @@ const getRoleSlug = (role: string | undefined): string => {
     admin: "g",
     agency: "a",
     lister: "l",
-    seeker: "s",
+    seeker: "",
   };
   return roleMap[role || ""] || "";
 };

@@ -196,7 +196,8 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
     return (
       <GreetingModal
         title="Check your inbox"
-        description="We've sent you a magic link.  click it to continue"
+        description="We've sent you a magic link"
+        secondaryDescription="Click it to continue"
         isOpen={isRegistered}
         onOpenChange={setIsRegistered}
         // cta="Start exploring"
