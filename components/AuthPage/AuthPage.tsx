@@ -21,6 +21,7 @@ import { CheckEmail, cn, NormalizePhone } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorContext } from "better-auth/react";
 import { BadgeCheck, Lock, Mail, Phone, User } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -95,7 +96,6 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
           return;
         }
 
-        toast.success("Logged in successfully");
         return;
       }
 
@@ -213,9 +213,19 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         onSubmit={handleSubmit(onSubmit)}
         {...props}
       >
+        <div className="flex justify-center items-center h-full gap-2 text-center z-50">
+          <h1 className="text-background z-50">roomey.</h1>
+        </div>
         <div className="flex-1 flex flex-col justify-end gap-4 z-50">
           {formType === "login" ? (
             <div className="grid gap-4">
+              <div className="flex justify-end">
+                <Link href="/forgot-password">
+                  <Button type="button" variant="link">
+                    Forgot Password?
+                  </Button>
+                </Link>
+              </div>
               <FormField
                 control={control}
                 name="identifier"
@@ -235,10 +245,6 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
                   </FormItem>
                 )}
               />
-
-              {/* <Link href="/forgot-password" className="text-center">
-                <h3>Forgot password?</h3>
-              </Link> */}
 
               <FormField
                 control={form.control}
@@ -266,6 +272,15 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Logging in..." : "Log in"}
+              </Button>
+              <Button
+                type="button"
+                size="lg"
+                className="w-full text-lg"
+                variant="outline_white"
+                onClick={() => handleChangeFormType(null)}
+              >
+                Go Back
               </Button>
             </div>
           ) : formType === "register" ? (
@@ -356,6 +371,15 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
               >
                 {isSubmitting ? "Creating account..." : "Create account"}
               </Button>
+              <Button
+                type="button"
+                size="lg"
+                className="w-full text-lg"
+                variant="outline_white"
+                onClick={() => handleChangeFormType(null)}
+              >
+                Go Back
+              </Button>
             </div>
           ) : null}
 
@@ -363,7 +387,7 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         </div>
 
         {!formType && (
-          <div className="mt-auto my-10 space-y-2">
+          <div className="mt-auto my-10 space-y-4">
             <Button
               type="button"
               size="lg"

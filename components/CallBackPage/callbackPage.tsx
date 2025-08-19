@@ -1,9 +1,10 @@
 "use client";
 
-import { useSession } from "@/lib/auth/auth-client";
 import { getRoleSegment } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
+
+import { useSession } from "@/lib/auth/auth-client";
 
 const CallbackPage = () => {
   const router = useRouter();
@@ -15,13 +16,15 @@ const CallbackPage = () => {
 
     if (!session.user.phoneNumberVerified) return "/otp-verification";
 
-    //get role
-    const roleSegment = getRoleSegment(session?.user?.role as string);
+    if (!session.user.user_is_onboarded) return "/onboarding";
+
+    const roleSegment = getRoleSegment(session.user?.role as string);
     return roleSegment ? `/${roleSegment}/dashboard` : "/";
   }, [session]);
 
   useEffect(() => {
     if (!target) return;
+
     router.replace(target);
   }, [router, target]);
 

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { BetterUser } from "../type";
 import { Session as SessionResponse } from "./auth-client";
 
 const getServerSession = async (): Promise<typeof SessionResponse | null> => {
@@ -12,7 +13,11 @@ const getServerSession = async (): Promise<typeof SessionResponse | null> => {
       },
     });
 
-    return res.json() as Promise<typeof SessionResponse | null>;
+    return res.json() as Promise<
+      typeof SessionResponse & {
+        user: BetterUser;
+      }
+    >;
   } catch (error) {
     return null;
   }

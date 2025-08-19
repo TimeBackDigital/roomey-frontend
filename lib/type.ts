@@ -18,7 +18,7 @@ export type CaptchaApi = {
   clear: () => void;
 };
 
-export type AuthFormType = "login" | "register";
+export type AuthFormType = "login" | "register" | null;
 
 export type OnboardingStep = {
   id: string;
@@ -85,4 +85,6 @@ export type UserListType = {
 export type BetterUser = User & {
   user_is_onboarded: boolean;
   role: string;
+  phoneNumberVerified: boolean;
+  phoneNumber: string;
 };

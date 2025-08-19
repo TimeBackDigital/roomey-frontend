@@ -14,7 +14,7 @@ export const urlOf = (origin: string, path: string) => {
   return new URL(path, origin);
 };
 
-export function getRoleSlug(role: string | undefined): string {
+export const getRoleSlug = (role: string | undefined): string => {
   if (!role) return "";
 
   const roleMap: Record<string, string> = {
@@ -25,4 +25,27 @@ export function getRoleSlug(role: string | undefined): string {
   };
 
   return roleMap[role] || "";
-}
+};
+
+export const authenticationAction = {
+  authenticated: (role: string) => {
+    if (role === "admin") {
+      return "/admin";
+    }
+    return `/${getRoleSlug(role)}/dashboard`;
+  },
+
+  isPhoneNotVerified: (isPhoneNotVerified: boolean) => {
+    if (isPhoneNotVerified) {
+      return "/otp-verification";
+    }
+    return "/onboarding";
+  },
+
+  isOnboarded: (isOnboarded: boolean, role: string | undefined) => {
+    if (isOnboarded) {
+      return `/${getRoleSlug(role)}/dashboard`;
+    }
+    return "/onboarding";
+  },
+};
