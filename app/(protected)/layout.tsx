@@ -1,35 +1,20 @@
-// AuthenticatedLayout.tsx
-import getServerSession from "@/lib/auth/server-session";
-import { authenticationAction } from "@/lib/helper";
+"use client";
+
+import { useUser } from "@/components/Providers/AuthProvider";
+import { getRoleSlug } from "@/lib/helper";
 import { redirect } from "next/navigation";
 import React from "react";
 
-const AuthenticatedLayout = async ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const session = await getServerSession();
+const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useUser();
 
-  if (!session) {
+  if (!user) {
     return redirect("/auth");
   }
 
-  const { role, phoneNumberVerified, user_is_onboarded } = session.user;
-
-  if (phoneNumberVerified) {
-    return redirect(
-      authenticationAction.isPhoneNotVerified(phoneNumberVerified)
-    );
+  if (user.role !== "admin") {
+    return redirect(getRoleSlug(user.role) + "/dashboard");
   }
-
-  if (!user_is_onboarded) {
-    return redirect(
-      authenticationAction.isOnboarded(user_is_onboarded, role ?? undefined)
-    );
-  }
-
-  authenticationAction.authenticated(role ?? "");
 
   return <>{children}</>;
 };

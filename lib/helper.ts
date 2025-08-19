@@ -1,4 +1,5 @@
 import { PUBLIC_ROUTES, ROLE_PREFIX } from "./constant";
+import { BetterUser } from "./type";
 
 export function isPublicPath(pathname: string): boolean {
   return Array.from(PUBLIC_ROUTES).some(
@@ -28,24 +29,21 @@ export const getRoleSlug = (role: string | undefined): string => {
 };
 
 export const authenticationAction = {
-  authenticated: (role: string) => {
-    if (role === "admin") {
-      return "/admin";
-    }
-    return `/${getRoleSlug(role)}/dashboard`;
-  },
+  authenticated: (user: BetterUser) => {
+    if (!user) return "/auth";
 
-  isPhoneNotVerified: (isPhoneNotVerified: boolean) => {
-    if (isPhoneNotVerified) {
+    if (!user.phoneNumberVerified) {
       return "/otp-verification";
     }
-    return "/onboarding";
-  },
 
-  isOnboarded: (isOnboarded: boolean, role: string | undefined) => {
-    if (isOnboarded) {
-      return `/${getRoleSlug(role)}/dashboard`;
+    if (!user.user_is_onboarded) {
+      return "/onboarding";
     }
-    return "/onboarding";
+
+    if (user.role === "seeker") {
+      return "/";
+    }
+
+    return `/${getRoleSlug(user.role)}/dashboard`;
   },
 };

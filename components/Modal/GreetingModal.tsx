@@ -4,7 +4,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import Link from "next/link";
 import { Button } from "../ui/button";
 
 type GreetingModalProps = {
@@ -16,6 +15,7 @@ type GreetingModalProps = {
   Icon?: React.ReactNode;
   cta?: string;
   redirectTo?: string;
+  onRedirect?: () => void;
 };
 
 const GreetingModal = ({
@@ -27,6 +27,7 @@ const GreetingModal = ({
   Icon,
   cta,
   redirectTo,
+  onRedirect,
 }: GreetingModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -54,11 +55,11 @@ const GreetingModal = ({
           )}
         </DialogHeader>
         {redirectTo && (
-          <Link href={redirectTo}>
-            <Button size="lg" className="w-full text-lg">
+          <a href={redirectTo}>
+            <Button size="lg" className="w-full text-lg" onClick={onRedirect}>
               {cta}
             </Button>
-          </Link>
+          </a>
         )}
       </DialogContent>
     </Dialog>

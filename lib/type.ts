@@ -88,3 +88,17 @@ export type BetterUser = User & {
   phoneNumberVerified: boolean;
   phoneNumber: string;
 };
+
+export type PlanList = {
+  plan_id: string;
+  plan_name: string;
+  plan_price_id: string;
+  plan_created_at: Date;
+  plan_updated_at: Date;
+  plan_photo: string;
+  plan_description: string;
+  plan_role_available: string;
+  plan_is_active: boolean;
+  plan_type: string;
+  plan_limit: JSON;
+};

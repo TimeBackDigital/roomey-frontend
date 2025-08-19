@@ -3,20 +3,9 @@ import {
   flexRender,
   Table as ReactTable,
 } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
-import { Calendar } from "../ui/calendar";
-import { Card, CardContent, CardHeader } from "../ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Input } from "../ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Card, CardContent } from "../ui/card";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Skeleton } from "../ui/skeleton";
 import {
@@ -35,20 +24,7 @@ type Props<T> = {
   totalCount: number;
   isFetchingList: boolean;
   setActivePage: Dispatch<SetStateAction<number>>;
-  filters?: {
-    search?: string;
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-    take?: number;
-    page?: number;
-  };
-  onSearch: (filters: {
-    search?: string;
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-    take?: number;
-    page?: number;
-  }) => void;
+  skip?: number;
 };
 
 const ReusableTable = <T extends object>({
@@ -58,107 +34,13 @@ const ReusableTable = <T extends object>({
   totalCount,
   isFetchingList,
   setActivePage,
-  filters,
-  onSearch,
+  skip = 10,
 }: Props<T>) => {
-  const pageCount = Math.ceil(totalCount / (filters?.take || 10));
+  const skipValue = typeof skip === "number" ? skip : 10;
+  const pageCount = Math.ceil(totalCount / skipValue);
 
   return (
     <Card>
-      <CardHeader>
-        {filters && (
-          <div className="flex justify-end gap-2 border-b-2 py-2">
-            {filters.search && (
-              <Input
-                variant="filter"
-                placeholder="Search..."
-                value={filters.search}
-                className="w-[250px]"
-                onChange={(e) => {
-                  onSearch({ ...filters, search: e.target.value });
-                }}
-              />
-            )}
-
-            {filters.startDate && filters.endDate && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    data-empty={!filters.startDate}
-                    className="data-[empty=true]:text-muted-foreground w-[280px] justify-start text-left font-normal"
-                  >
-                    <CalendarIcon />
-                    {filters.startDate ? (
-                      format(filters.startDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="range"
-                    selected={
-                      filters.startDate
-                        ? {
-                            from: new Date(filters.startDate),
-                            to: filters.endDate
-                              ? new Date(filters.endDate)
-                              : undefined,
-                          }
-                        : undefined
-                    }
-                    onSelect={(range) => {
-                      if (range) {
-                        onSearch({
-                          ...filters,
-                          startDate: range.from,
-                          endDate: range.to,
-                        });
-                      }
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
-
-            {filters.take && (
-              <DropdownMenu>
-                <div className="flex items-center gap-x-2 text-md text-primary">
-                  Show
-                  <DropdownMenuTrigger className="font-semibold flex items-center gap-x-1">
-                    {filters.take} <ChevronDownIcon className="size-3" />
-                  </DropdownMenuTrigger>
-                  Entries
-                </div>
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    onClick={() => onSearch({ ...filters, take: 10 })}
-                  >
-                    10
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => onSearch({ ...filters, take: 20 })}
-                  >
-                    20
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => onSearch({ ...filters, take: 50 })}
-                  >
-                    50
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => onSearch({ ...filters, take: 100 })}
-                  >
-                    100
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        )}
-      </CardHeader>
       <CardContent>
         <ScrollArea className="relative w-full overflow-x-auto">
           {isFetchingList && (
@@ -209,10 +91,7 @@ const ReusableTable = <T extends object>({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="text-primary flex w-full justify-center items-center font-bold text-center py-10"
-                  >
+                  <TableCell colSpan={columns.length} className="text-center">
                     No data found.
                   </TableCell>
                 </TableRow>

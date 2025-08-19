@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorContext } from "better-auth/react";
 import { BadgeCheck, Lock, Mail, Phone, User } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -52,6 +53,8 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
     defaultValues: loginDefaults,
     shouldUnregister: true,
   });
+
+  const router = useRouter();
 
   const captchaRef = useRef<CaptchaApi>(null);
 
@@ -87,7 +90,9 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
                 });
               }
             },
-            onSuccess: async () => setIsLoggedIn(true),
+            onSuccess: async () => {
+              setIsLoggedIn(true);
+            },
           },
         });
 
@@ -107,7 +112,9 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         password: password,
         fetchOptions: {
           headers: { "x-captcha-response": token ?? "" },
-          onSuccess: async () => setIsLoggedIn(true),
+          onSuccess: async () => {
+            setIsLoggedIn(true);
+          },
         },
       });
 
@@ -115,8 +122,6 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         toast.error(error.message ?? "Failed to send OTP");
         return;
       }
-
-      toast.success("Logged in successfully");
     } catch {
       toast.error("Sign in failed");
     }
@@ -147,7 +152,7 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
               phoneNumber: phoneNumber,
             });
             reset();
-
+            router.refresh();
             setIsRegistered(true);
           },
         },
@@ -187,6 +192,7 @@ const AuthForm = ({ className, ...props }: React.ComponentProps<"form">) => {
         onOpenChange={setIsLoggedIn}
         Icon={<BadgeCheck className="size-24 text-primary" />}
         cta="Start exploring"
+        onRedirect={() => router.refresh()}
         redirectTo="/callback"
       />
     );

@@ -45,8 +45,8 @@ const data = {
           url: "#",
         },
         {
-          title: "Plans nd Boosts",
-          url: "#",
+          title: "Plans and Boosts",
+          url: "/g/plan-and-boost",
         },
       ],
     },

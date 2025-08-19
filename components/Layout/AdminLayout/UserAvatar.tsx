@@ -8,17 +8,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient, useSession } from "@/lib/auth/auth-client";
 import { UserIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const UserAvatar = () => {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const handleSignOut = async () => {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push("/auth");
+          window.location.href = "/auth";
         },
       },
     });
