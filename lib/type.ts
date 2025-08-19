@@ -18,7 +18,7 @@ export type CaptchaApi = {
   clear: () => void;
 };
 
-export type AuthFormType = "login" | "register";
+export type AuthFormType = "login" | "register" | null;
 
 export type OnboardingStep = {
   id: string;
@@ -85,4 +85,20 @@ export type UserListType = {
 export type BetterUser = User & {
   user_is_onboarded: boolean;
   role: string;
+  phoneNumberVerified: boolean;
+  phoneNumber: string;
+};
+
+export type PlanList = {
+  plan_id: string;
+  plan_name: string;
+  plan_price_id: string;
+  plan_created_at: Date;
+  plan_updated_at: Date;
+  plan_photo: string;
+  plan_description: string;
+  plan_role_available: string;
+  plan_is_active: boolean;
+  plan_type: string;
+  plan_limit: JSON;
 };

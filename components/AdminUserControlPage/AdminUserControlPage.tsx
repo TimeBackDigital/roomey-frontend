@@ -86,8 +86,6 @@ const AdminUserControlPage = () => {
         activePage={filters.page}
         totalCount={data?.total ?? 0}
         isFetchingList={isLoading}
-        filters={filters}
-        onSearch={handleSearch}
         setActivePage={(activePage) => {
           setFilters((prevFilters) => ({
             ...prevFilters,

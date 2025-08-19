@@ -14,12 +14,6 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="relative">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="fixed z-50 top-1/2 -translate-y-1/2 text-background">
-          roomey.
-        </h1>
-      </div>
-
       <Image
         src="/assets/bg/auth_bg.webp"
         alt="auth background image"

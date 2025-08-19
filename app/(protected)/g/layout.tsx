@@ -3,6 +3,7 @@ import LatestSegment from "@/components/Layout/AdminLayout/LatestSegment";
 import UserAvatar from "@/components/Layout/AdminLayout/UserAvatar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Bell, MessageSquareText } from "lucide-react";
+
 type LayoutProps = {
   children: React.ReactNode;
 };

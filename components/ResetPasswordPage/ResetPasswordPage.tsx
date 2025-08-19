@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
@@ -22,11 +22,12 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 
-const ResetPasswordPage = () => {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+type ResetPasswordPageProps = {
+  token: string;
+};
 
-  const token = searchParams.get("token");
+const ResetPasswordPage = ({ token }: ResetPasswordPageProps) => {
+  const router = useRouter();
 
   const form = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(ResetPasswordSchema),
@@ -102,9 +103,9 @@ const ResetPasswordPage = () => {
                   <FormControl>
                     <Input
                       icon={<Lock className="size-4" />}
-                      id="password"
+                      id="confirmPassword"
                       type="password"
-                      placeholder="Password"
+                      placeholder="Confirm Password"
                       {...field}
                     />
                   </FormControl>

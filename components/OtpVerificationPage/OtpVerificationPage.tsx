@@ -33,7 +33,7 @@ const OtpVerificationForm = ({
 
   const router = useRouter();
 
-  const { data: user } = useSession();
+  const { data: user, refetch } = useSession();
 
   const form = useForm<OtpVerificationSchemaType>({
     resolver: zodResolver(OtpVerificationSchema),
@@ -93,7 +93,7 @@ const OtpVerificationForm = ({
       toast.success("Phone number verified successfully");
 
       reset();
-
+      refetch();
       router.push("/onboarding");
 
       setCountdown(0);

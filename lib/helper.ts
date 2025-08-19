@@ -1,4 +1,5 @@
 import { PUBLIC_ROUTES, ROLE_PREFIX } from "./constant";
+import { BetterUser } from "./type";
 
 export function isPublicPath(pathname: string): boolean {
   return Array.from(PUBLIC_ROUTES).some(
@@ -14,7 +15,7 @@ export const urlOf = (origin: string, path: string) => {
   return new URL(path, origin);
 };
 
-export function getRoleSlug(role: string | undefined): string {
+export const getRoleSlug = (role: string | undefined): string => {
   if (!role) return "";
 
   const roleMap: Record<string, string> = {
@@ -25,4 +26,24 @@ export function getRoleSlug(role: string | undefined): string {
   };
 
   return roleMap[role] || "";
-}
+};
+
+export const authenticationAction = {
+  authenticated: (user: BetterUser) => {
+    if (!user) return "/auth";
+
+    if (!user.phoneNumberVerified) {
+      return "/otp-verification";
+    }
+
+    if (!user.user_is_onboarded) {
+      return "/onboarding";
+    }
+
+    if (user.role === "seeker") {
+      return "/";
+    }
+
+    return `/${getRoleSlug(user.role)}/dashboard`;
+  },
+};

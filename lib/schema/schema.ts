@@ -5,8 +5,12 @@ export const phoneRegex = /^[+]?[\d\s\-().]{7,20}$/;
 
 export const LoginSchema = z.object({
   type: z.literal("login"),
-  identifier: z.string().min(1, "Required field").max(50).trim(),
-  password: z.string().min(6, "Required field").max(25).trim(),
+  identifier: z
+    .string()
+    .min(1, "Email or phone number is required")
+    .max(50)
+    .trim(),
+  password: z.string().min(6, "Password is required").max(25).trim(),
 });
 
 export const RegisterSchema = z.object({
