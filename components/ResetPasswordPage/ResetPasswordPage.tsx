@@ -1,85 +1,133 @@
 "use client";
 
 import { authClient } from "@/lib/auth/auth-client";
+import {
+  ResetPasswordSchema,
+  ResetPasswordSchemaType,
+} from "@/lib/schema/schema";
 import { cn } from "@/lib/utils";
-import { useSearchParams } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Button } from "../ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 
-type ResetPasswordFormInputs = {
-  password: string;
-  confirmPassword: string;
+type ResetPasswordPageProps = {
+  token: string;
 };
 
-const ResetPasswordPage = () => {
-  const searchParams = useSearchParams();
+const ResetPasswordPage = ({ token }: ResetPasswordPageProps) => {
+  const router = useRouter();
 
-  const token = searchParams.get("token");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ResetPasswordFormInputs>({
+  const form = useForm<ResetPasswordSchemaType>({
+    resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
       password: "",
       confirmPassword: "",
     },
   });
 
-  const handleResetPassword = async (data: ResetPasswordFormInputs) => {
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+  } = form;
+
+  const handleResetPassword = async (data: ResetPasswordSchemaType) => {
     try {
       const { error } = await authClient.resetPassword({
         newPassword: data.password,
         token: token ?? undefined,
       });
-      if (error) throw error;
+      if (error) {
+        toast.error(error.message ?? "Failed to reset password");
+        return;
+      }
+
+      toast.success("Password updated successfully");
+      router.push("/auth");
     } catch (error) {
-      console.error(error);
+      toast.error("Failed to reset password");
     }
   };
 
   return (
-    <form
-      className={cn("flex flex-col gap-6")}
-      onSubmit={handleSubmit(handleResetPassword)}
-    >
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Forgot your password?</h1>
-        <p className="text-muted-foreground text-sm">Enter your new password</p>
-      </div>
+    <Form {...form}>
+      <form
+        className={cn("flex flex-col justify-center gap-6 h-full")}
+        onSubmit={handleSubmit(handleResetPassword)}
+      >
+        <div className="flex-1 flex flex-col justify-center gap-4">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <h2 className="text-[26px] font-[600]">Reset password</h2>
+            <p>Enter your new password</p>
+          </div>
 
-      <div className="grid gap-4">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          {...register("password", { required: "Password is required" })}
-        />
-        {errors.password && (
-          <p className="text-sm text-red-500">{errors.password.message}</p>
-        )}
+          <div className="grid gap-4">
+            <FormField
+              control={control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Enter Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      icon={<Lock className="size-4" />}
+                      id="password"
+                      type="password"
+                      placeholder="Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          {...register("confirmPassword", {
-            required: "Confirm Password is required",
-          })}
-        />
-        {errors.confirmPassword && (
-          <p className="text-sm text-red-500">
-            {errors.confirmPassword.message}
-          </p>
-        )}
-        <Button type="submit" className="w-full">
-          Reset Password
-        </Button>
-      </div>
-    </form>
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      icon={<Lock className="size-4" />}
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="Confirm Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        <div className="mt-auto my-10 space-y-2">
+          <Button
+            size="lg"
+            type="submit"
+            className="w-full text-lg"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Updating..." : "Update Password"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };
 

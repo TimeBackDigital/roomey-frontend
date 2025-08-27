@@ -1,22 +1,23 @@
 "use client";
 
-import { useSession } from "@/lib/auth/auth-client";
-import { Role } from "@/lib/enum";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import { authenticationAction } from "@/lib/helper";
+import { useUser } from "../Providers/AuthProvider";
+
 const CallbackPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+
+  const { user } = useUser();
 
   useEffect(() => {
-    if (!session) {
-      router.push("/login");
-    }
+    if (!user) return;
 
-    const roleKey = session?.user.role as keyof typeof Role;
-    router.push(`/${Role[roleKey]}/dashboard`);
-  }, [session]);
+    const route = authenticationAction.authenticated(user);
+
+    router.replace(route);
+  }, [router, user]);
 
   return null;
 };
