@@ -1,4 +1,4 @@
-import { HousePlus, UserSearch } from "lucide-react";
+import { HousePlus, ShieldCheck, UserSearch } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
@@ -29,27 +29,41 @@ const OnboardingPage = () => {
         <h3 className="text-xl text-primary">
           Welcome to the roomey community!
         </h3>
-        <p>How can we help you today?</p>
+        <p className="text-lg">How can we help you today?</p>
       </header>
+      <div className="flex flex-col gap-4">
+        <Card className="hover:shadow-lg transition-shadow duration-200 p-0 py-3">
+          <CardHeader className="flex items-center gap-4">
+            <ShieldCheck className="h-14 w-14" />
+            <div className="flex flex-col text-muted-foreground">
+              <p className="text-sm ">We care about your safety:</p>
+              <p className="text-sm ">
+                Every account is confirmed (phone & email verified). Report
+                anything suspicious.
+              </p>
+            </div>
+          </CardHeader>
+        </Card>
 
-      <div className="space-y-4">
-        {choices.map(({ href, title, desc, Icon }) => (
-          <Link key={href} href={href} className="block">
-            <Card className="hover:shadow-lg transition-shadow duration-200">
-              <CardHeader className="flex items-center gap-2">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Icon className="h-8 w-8" aria-hidden />
-                </div>
-                <CardTitle className="font-semibold text-primary text-2xl">
-                  {title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <h3 className="text-md font-semibold text-primary">{desc}</h3>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+        <div className="space-y-4">
+          {choices.map(({ href, title, desc, Icon }) => (
+            <Link key={href} href={href} className="block">
+              <Card className="hover:shadow-lg transition-shadow duration-200">
+                <CardHeader className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                    <Icon className="h-10 w-10" aria-hidden />
+                  </div>
+                  <CardTitle className="font-semibold text-primary text-2xl">
+                    {title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-lg">{desc}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

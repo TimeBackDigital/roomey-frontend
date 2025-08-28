@@ -4,7 +4,6 @@ import { z } from "zod";
 export const phoneRegex = /^[+]?[\d\s\-().]{7,20}$/;
 
 export const LoginSchema = z.object({
-  type: z.literal("login"),
   identifier: z
     .string()
     .min(1, "Email or phone number is required")
@@ -14,11 +13,11 @@ export const LoginSchema = z.object({
 });
 
 export const RegisterSchema = z.object({
-  type: z.literal("register"),
   displayName: z.string().min(1, "Display name is required"),
   email: z.email("Invalid email"),
   phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
   password: z.string().min(6, "Password must be at least 6 characters").max(25),
+  terms: z.boolean(),
 });
 
 export const UnionSchema = z.discriminatedUnion("type", [
