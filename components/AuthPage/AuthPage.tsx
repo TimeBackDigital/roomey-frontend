@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
-const AuthForm = ({ className }: { className?: string }) => {
+const AuthPage = ({ className }: { className?: string }) => {
   const router = useRouter();
 
   return (
     <div className={cn("flex flex-col justify-center gap-6 h-full", className)}>
       <div className="flex justify-center items-center h-full gap-2 text-center z-50">
-        <h1 className="text-background z-50">roomey.</h1>
+        <h1 className="text-background z-50 tracking-wide">roomey.</h1>
       </div>
 
       <div className="mt-auto my-10 space-y-4">
@@ -37,4 +37,4 @@ const AuthForm = ({ className }: { className?: string }) => {
   );
 };
 
-export default AuthForm;
+export default AuthPage;

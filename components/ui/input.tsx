@@ -11,7 +11,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const variantType = {
       default: {
         className: cn(
-          "flex h-10 w-full min-w-0 rounded-sm border border-border bg-background-secondary px-3 py-1 text-lg md:text-sm",
+          "flex h-10 w-full min-w-0 rounded-sm border border-border bg-background-secondary px-3 py-1 text-sm md:text-sm",
           "shadow-xs outline-none transition-[color,box-shadow]",
           "file:inline-flex file:h-7 file:border-0 file:bg-background-secondary file:text-sm file:font-medium",
           "placeholder:text-primary/40 selection:bg-background-secondary selection:text-background-secondary",
