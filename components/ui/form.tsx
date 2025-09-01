@@ -98,7 +98,7 @@ function FormLabel({
       data-slot="form-label"
       data-error={!!error}
       className={cn(
-        "data-[error=true]:text-destructive font-bold text-primary",
+        "data-[error=true]:text-destructive font-bold text-[] text-primary",
         className
       )}
       htmlFor={formItemId}
@@ -133,7 +133,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="form-description"
       id={formDescriptionId}
-      className={cn("text-muted-foreground text-sm italic", className)}
+      className={cn("text-primary text-[12px] italic font-[300]", className)}
       {...props}
     />
   );

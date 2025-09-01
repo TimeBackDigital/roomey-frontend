@@ -16,7 +16,6 @@ import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,6 +23,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { PasswordInput } from "../ui/password-input";
+import RoomeyText from "../ui/roomey";
 
 const LoginForm = () => {
   const loginDefaults: LoginSchemaType = {
@@ -95,22 +95,17 @@ const LoginForm = () => {
     }
   };
 
-  console.log(form.formState.errors);
-
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(handleSignInMethod)}>
         <div className="flex flex-col py-6 min-h-screen">
-          <div className="flex flex-col items-center gap-2 text-center mb-6">
-            <h1 className="text-logo">roomey.</h1>
-          </div>
-
+          <RoomeyText />
           <div className="flex-1 flex flex-col gap-y-[60px]">
             <div className="w-full space-y-2 text-center mb-6 pt-20">
-              <h2 className="tracking-tighter">
+              <h3 className="tracking-tighter">
                 Log in to your Roomey account!
-              </h2>
-              <p className="max-w-3xs mx-auto">
+              </h3>
+              <p className="mx-auto max-w-62 text-base">
                 Let&apos;s set up your profile so you can get started.
               </p>
             </div>
@@ -131,9 +126,7 @@ const LoginForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      We&apos;ll use this to log you in and send you updates.
-                    </FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}

@@ -24,6 +24,7 @@ import {
   FormItem,
   FormMessage,
 } from "../ui/form";
+import RoomeyText from "../ui/roomey";
 
 const OtpVerificationForm = ({
   className,
@@ -72,7 +73,7 @@ const OtpVerificationForm = ({
 
       toast.success("OTP sent successfully!");
 
-      setCountdown(30);
+      setCountdown(300);
     } catch {
       toast.error("Failed to send OTP");
     }
@@ -112,11 +113,7 @@ const OtpVerificationForm = ({
         onSubmit={handleSubmit((data) => handleOtpSubmit(data))}
         {...props}
       >
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="fixed z-50 top-16 -translate-y-1/2 text-logo">
-            roomey.
-          </h1>
-        </div>
+        <RoomeyText />
 
         <div className="flex flex-col gap-2 text-center">
           <div className="flex flex-col items-center gap-6 text-center">
@@ -156,8 +153,8 @@ const OtpVerificationForm = ({
             <p>Didn&apos;t get it?</p>
             <Button
               type="button"
-              variant="link"
-              className="p-0"
+              variant="ghost"
+              className="p-0 text-primary"
               size="sm"
               disabled={isSubmitting || countdown > 0}
               onClick={handleSendOtp}

@@ -8,10 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LockKeyhole, Mail, Phone, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Captcha from "../Captcha/TurnstileCaptcha";
+import GreetingModal from "../Modal/GreetingModal";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import {
@@ -25,8 +26,10 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { PasswordInput } from "../ui/password-input";
+import RoomeyText from "../ui/roomey";
 
 const RegisterForm = () => {
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const registerDefaults: RegisterSchemaType = {
@@ -77,6 +80,7 @@ const RegisterForm = () => {
               phoneNumber: phoneNumber,
             });
             reset();
+            setSuccess(true);
             router.refresh();
           },
         },
@@ -90,18 +94,29 @@ const RegisterForm = () => {
       toast.error("Failed to create account");
     }
   };
+
+  if (success) {
+    return (
+      <GreetingModal
+        title="Check your inbox"
+        description="We've sent you a magic link"
+        secondaryDescription="Click it to continue"
+        isOpen={true}
+        onOpenChange={setSuccess}
+      />
+    );
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(handleSignUpMethod)}>
-        <div className="flex flex-col py-10 min-h-screen">
-          <div className="flex flex-col items-center gap-2 text-center mb-6">
-            <h1 className="text-logo">roomey.</h1>
-          </div>
+        <div className="flex flex-col pt-10 min-h-screen">
+          <RoomeyText />
 
           <div className="flex-1 flex flex-col gap-y-4">
-            <div className="w-full space-y-2 text-center mb-6 pt-10">
-              <h2 className="tracking-tighter">Create your Roomey account!</h2>
-              <p className="max-w-2xs tracking-wide mx-auto">
+            <div className="w-full space-y-2 text-center mb-6">
+              <h3 className="tracking-tighter">Create your Roomey account!</h3>
+              <p className="max-w-62 tracking-tight text-base mx-auto">
                 Let&apos;s set up your profile so you can get started.
               </p>
             </div>
@@ -123,7 +138,7 @@ const RegisterForm = () => {
                       />
                     </FormControl>
                     <FormDescription>
-                      We&apos;ll use this to log you in and send you updates.
+                      This is what people will know you as on Roomey
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -145,7 +160,7 @@ const RegisterForm = () => {
                       />
                     </FormControl>
                     <FormDescription>
-                      We&apos;ll use this to log you in and send you updates.
+                      We&apos;ll send you a link to verify
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -168,7 +183,7 @@ const RegisterForm = () => {
                       />
                     </FormControl>
                     <FormDescription>
-                      We&apos;ll use this to send you updates.
+                      We&apos;ll send you a code to verify
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -189,9 +204,7 @@ const RegisterForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Your password must be at least 8 characters long.
-                    </FormDescription>
+                    <FormDescription>Make it strong & secure</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -201,7 +214,7 @@ const RegisterForm = () => {
               control={form.control}
               name="terms"
               render={({ field }) => (
-                <FormItem className="flex flex-row-reverse gap-2 items-center  pt-10 justify-center">
+                <FormItem className="flex flex-row-reverse gap-2 items-center py-6 justify-center">
                   <FormLabel className="font-normal">
                     I agree to the
                     <Link href="/terms" className="underline font-bold">

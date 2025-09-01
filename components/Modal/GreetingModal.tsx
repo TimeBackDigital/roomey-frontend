@@ -31,7 +31,10 @@ const GreetingModal = ({
 }: GreetingModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full flex flex-col justify-center min-h-screen m-0 px-4 max-w-full sm:max-w-full rounded-none">
+      <DialogContent
+        showCloseButton={false}
+        className="w-full flex flex-col justify-center min-h-screen m-0 px-4 max-w-full sm:max-w-full rounded-none"
+      >
         <DialogHeader className="flex flex-col items-center justify-center gap-4 text-center mb-8">
           <div className="mb-4 fixed top-16 -translate-y-1/2">
             <h1 className="text-logo">roomey.</h1>

@@ -1,15 +1,14 @@
 "use client";
 
 import { useUser } from "@/components/Providers/AuthProvider";
-import { redirect } from "next/navigation";
+import { authenticationAction } from "@/lib/helper";
+import { BetterUser } from "@/lib/type";
 import React from "react";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUser();
 
-  if (user) {
-    return redirect("/");
-  }
+  authenticationAction.authenticated(user as BetterUser);
 
   return <div className="relative">{children}</div>;
 };
