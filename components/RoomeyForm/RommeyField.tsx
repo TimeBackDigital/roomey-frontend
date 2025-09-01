@@ -47,6 +47,16 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
     pickFile();
   };
 
+  const hiddenFields = [
+    "budget_amount",
+    "budget_unit",
+    "rent_amount",
+    "rent_unit",
+    "bond_amount",
+    "bond_unit",
+    "availability",
+  ];
+
   return fields.map((f) => {
     if (f.name === "budget_amount") {
       const unitField = fields.find((ff) => ff.name === "budget_unit");
@@ -81,9 +91,9 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
             />
 
             <FormField
-              key={unitField.name}
+              key={"budget_unit"}
               control={control}
-              name={unitField.name as FieldPath<FieldValues>}
+              name={"budget_unit"}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -112,9 +122,142 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
           </div>
         </div>
       );
+    } else if (f.name === "rent_amount") {
+      const amountField = fields.find((ff) => ff.name === "rent_amount");
+      const unitField = fields.find((ff) => ff.name === "rent_unit");
+
+      if (!amountField?.name || !unitField?.name) return null;
+
+      return (
+        <div key="rent-group" className="space-y-2">
+          <FormLabel>
+            {f.label} {f.required && <span>*</span>}
+          </FormLabel>
+
+          <div className="grid grid-cols-2 gap-3">
+            <FormField
+              key={amountField.name}
+              control={control}
+              name={amountField.name as FieldPath<FieldValues>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      {...field}
+                      placeholder="$250"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              key={unitField?.name}
+              control={control}
+              name={unitField?.name as FieldPath<FieldValues>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-full bg-background-secondary">
+                        <SelectValue
+                          placeholder={unitField?.placeholder || "Select"}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {unitField?.options?.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+      );
+    } else if (f.name === "bond_amount") {
+      const unitField = fields.find((ff) => ff.name === "availability");
+      const amountField = fields.find((ff) => ff.name === "bond_amount");
+
+      if (!amountField?.name || !unitField?.name) return null;
+
+      return (
+        <div key="availability-group" className="gap-2 grid grid-cols-2">
+          <div className="space-y-2">
+            <FormLabel>
+              {amountField.label} {amountField.required && <span>*</span>}
+            </FormLabel>
+
+            <FormField
+              key={amountField.name}
+              control={control}
+              name={amountField.name as FieldPath<FieldValues>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      {...field}
+                      placeholder="$250"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <FormLabel>
+              {unitField.label} {unitField.required && <span>*</span>}
+            </FormLabel>
+            <FormField
+              key={unitField?.name}
+              control={control}
+              name={unitField?.name as FieldPath<FieldValues>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-full bg-background-secondary">
+                        <SelectValue
+                          placeholder={unitField.placeholder || "Select"}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {unitField?.options?.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+      );
     }
 
-    if (f.name === "budget_unit") return null;
+    if (hiddenFields.includes(f.name)) return null;
 
     return (
       <FormField
@@ -256,7 +399,9 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
             case "radio group": {
               return (
                 <FormItem
-                  className={`${f.isRow ? "flex flex-wrap items-center" : ""}`}
+                  className={`${
+                    f.isRow ? "flex flex-wrap items-center" : "flex flex-col"
+                  }`}
                 >
                   <FormLabel className="mb-1">
                     {f.label}
@@ -269,7 +414,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      value={field.value}
+                      value={field.value ?? ""}
                       className={"flex flex-wrap gap-2"}
                     >
                       <RadioGroup
@@ -451,6 +596,209 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                             under 5 MB
                           </li>
                         </ul>
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }
+
+            case "multi file": {
+              const MAX_FILE_SIZE = 5 * 1024 * 1024;
+              const MAX_FILES = 10;
+              const ACCEPT = "image/png,image/jpeg,video/mp4,video/quicktime";
+
+              const inputId = `${f.name}-input`;
+
+              const toArray = (list?: FileList | null) =>
+                list ? Array.from(list) : [];
+              const isAcceptable = (file: File) =>
+                /^(image\/(png|jpe?g)|video\/(mp4|quicktime))$/i.test(
+                  file.type
+                ) && file.size <= MAX_FILE_SIZE;
+
+              return (
+                <FormItem>
+                  <FormControl>
+                    <div className="space-y-4">
+                      <div
+                        className="rounded-xl min-h-46 border border-dashed border-muted-foreground/30 bg-muted/20 p-6 sm:p-8 text-center flex justify-center items-center"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const incoming = toArray(e.dataTransfer.files).filter(
+                            isAcceptable
+                          );
+                          if (!incoming.length) return;
+                          const curr: File[] = Array.isArray(field.value)
+                            ? field.value
+                            : [];
+                          const room = Math.max(0, MAX_FILES - curr.length);
+                          field.onChange(curr.concat(incoming.slice(0, room)));
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onClick={onContainerClick}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            pickFile();
+                          }
+                        }}
+                      >
+                        {!(
+                          Array.isArray(field.value) && field.value.length > 0
+                        ) ? (
+                          <div className="flex flex-col items-center justify-center gap-3">
+                            <Images />
+                            <p className="text-sm">
+                              + Upload up to 10 Photos &amp; Media
+                            </p>
+                            <Button
+                              type="button"
+                              className="inline-flex items-center gap-2"
+                              onClick={onButtonPick}
+                            >
+                              <CloudUpload className="h-8 w-8 text-white" />
+                              Choose Photo
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="w-full">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                              {field.value.map((file: File, idx: number) => {
+                                const isImage = file.type.startsWith("image/");
+                                const url = URL.createObjectURL(file);
+                                return (
+                                  <div
+                                    key={idx}
+                                    className="relative group rounded-md overflow-hidden border bg-background"
+                                  >
+                                    {isImage ? (
+                                      <Image
+                                        src={url}
+                                        alt={file.name}
+                                        width={240}
+                                        height={180}
+                                        className="w-full h-32 object-cover"
+                                        onLoad={() => URL.revokeObjectURL(url)}
+                                      />
+                                    ) : (
+                                      <video
+                                        src={url}
+                                        className="w-full h-32 object-cover"
+                                        onLoadedData={() =>
+                                          URL.revokeObjectURL(url)
+                                        }
+                                        muted
+                                      />
+                                    )}
+                                    <div className="absolute inset-0 flex items-end justify-between p-2 opacity-0 group-hover:opacity-100 transition">
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+
+                                          inputRef.current?.click();
+
+                                          if (inputRef.current) {
+                                            inputRef.current.dataset.replaceIndex =
+                                              String(idx);
+                                          }
+                                        }}
+                                      >
+                                        Replace
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="destructive"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const next = [...field.value];
+                                          next.splice(idx, 1);
+                                          field.onChange(next);
+                                        }}
+                                      >
+                                        Remove
+                                      </Button>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {/* Counter */}
+                            <div className="mt-3 text-sm text-muted-foreground">
+                              {field.value.length}/{MAX_FILES} selected
+                            </div>
+
+                            {/* Add more button */}
+                            {field.value.length < MAX_FILES && (
+                              <div className="mt-3 flex justify-center">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={onButtonPick}
+                                >
+                                  Add More
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <input
+                          id={inputId}
+                          name={field.name}
+                          type="file"
+                          accept={ACCEPT}
+                          multiple
+                          className="hidden"
+                          ref={inputRef}
+                          onChange={(e) => {
+                            const picked = toArray(e.target.files).filter(
+                              isAcceptable
+                            );
+                            e.currentTarget.value = "";
+
+                            if (!picked.length) return;
+
+                            const replaceIndex = (
+                              inputRef.current as unknown as HTMLInputElement
+                            )?.dataset?.replaceIndex;
+                            if (replaceIndex !== undefined) {
+                              const idx = Number(replaceIndex);
+                              const next: File[] = Array.isArray(field.value)
+                                ? [...field.value]
+                                : [];
+                              next[idx] = picked[0];
+                              field.onChange(next);
+                              delete (
+                                inputRef.current as unknown as HTMLInputElement
+                              ).dataset.replaceIndex;
+                              return;
+                            }
+
+                            // add files (respect max)
+                            const curr: File[] = Array.isArray(field.value)
+                              ? field.value
+                              : [];
+                            const room = Math.max(0, MAX_FILES - curr.length);
+                            field.onChange(curr.concat(picked.slice(0, room)));
+                          }}
+                        />
+                      </div>
+
+                      {/* tips area under the drop zone */}
+                      <div className="flex flex-col justify-center items-center">
+                        <p className="italic text-sm mx-auto max-w-2xs text-center">
+                          Tip: Natural lighting and decluttered spaces get 3x
+                          more inquiries
+                        </p>
                       </div>
                     </div>
                   </FormControl>

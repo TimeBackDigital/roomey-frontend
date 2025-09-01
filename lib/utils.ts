@@ -104,7 +104,13 @@ export const ErrorMap: z.ZodErrorMap = (issue) => {
       };
     }
     case "too_small":
+      return {
+        message: `The text is too small for ${formatErrorMessage(
+          issue.path.join(" > ")
+        )}`,
+      };
     case "too_big":
+
     case "custom":
       return {
         message: `${"Please enter a valid input"} for ${formatErrorMessage(
@@ -124,25 +130,24 @@ export const ErrorMap: z.ZodErrorMap = (issue) => {
 function zodForField(f: FieldConfig): z.ZodTypeAny {
   const isFieldRequired = f.required === true;
 
-  const REQUIRED = "This field is required";
-  const INVALID = "Invalid input";
-
   const makeOptionalOrRequired = <T extends z.ZodTypeAny>(schema: T): T =>
     isFieldRequired ? schema : (schema.optional() as unknown as T);
 
   switch (f.type) {
     case "text":
+      let schema = z.string().trim();
+      if (isFieldRequired) schema = schema.min(1);
+      return makeOptionalOrRequired(schema);
     case "textarea": {
       let schema = z.string().trim();
-      if (isFieldRequired) schema = schema.min(1, REQUIRED);
+      if (isFieldRequired) schema = schema.min(50).max(300);
       return makeOptionalOrRequired(schema);
     }
 
     case "number": {
       const schema = z.preprocess(
-        // make empty string / null / undefined become undefined
         (v) => (v === "" || v == null ? undefined : v),
-        // then coerce remaining value to number
+
         z.coerce
           .number()
           .refine((n) => Number.isFinite(n), { message: "Invalid input" })
@@ -150,6 +155,24 @@ function zodForField(f: FieldConfig): z.ZodTypeAny {
 
       return makeOptionalOrRequired(schema);
     }
+    case "multi file":
+      const MULTI_FILE_MAX = 10;
+      const PER_FILE_MAX = 5 * 1024 * 1024;
+      const multiFileSchema = z
+        .array(z.instanceof(File))
+        .max(MULTI_FILE_MAX)
+        .refine(
+          (files) =>
+            files.every((f) =>
+              /^image\/(png|jpe?g)|video\/(mp4|quicktime)$/i.test(f.type)
+            ),
+          { message: "Only JPG/PNG images or MP4/MOV videos are allowed" }
+        )
+        .refine((files) => files.every((f) => f.size <= PER_FILE_MAX), {
+          message: "Each file must be ≤ 5MB",
+        });
+
+      return makeOptionalOrRequired(multiFileSchema);
     case "select": {
       const values = (f.options?.map((o) => o.value) ?? []).filter(
         (v): v is string => typeof v === "string" && v.length > 0
@@ -166,7 +189,7 @@ function zodForField(f: FieldConfig): z.ZodTypeAny {
       const s = z
         .string()
         .trim()
-        .min(1, REQUIRED)
+        .min(1)
         .transform(
           (v) => (v === "" ? undefined : v) as unknown as string | undefined
         );
@@ -182,23 +205,21 @@ function zodForField(f: FieldConfig): z.ZodTypeAny {
       }
 
       let s = z.string().trim();
-      if (isFieldRequired) s = s.min(1, REQUIRED);
+      if (isFieldRequired) s = s.min(1);
       return makeOptionalOrRequired(s);
     }
 
     case "checkbox": {
       let arr = z.array(z.string());
       if (isFieldRequired) {
-        arr = arr.min(1, { message: REQUIRED });
+        arr = arr.min(1);
       }
       arr = makeOptionalOrRequired(arr);
       return arr;
     }
 
     case "date": {
-      const d = z.coerce
-        .date()
-        .refine((v) => !Number.isNaN(v.getTime()), { message: INVALID });
+      const d = z.coerce.date().refine((v) => !Number.isNaN(v.getTime()));
 
       return makeOptionalOrRequired(d);
     }
@@ -206,7 +227,7 @@ function zodForField(f: FieldConfig): z.ZodTypeAny {
     case "file": {
       let any = z.instanceof(File);
       if (isFieldRequired) {
-        any = any.refine((v: File) => v != null, { message: REQUIRED });
+        any = any.refine((v: File) => v != null);
       }
       return makeOptionalOrRequired(any);
     }
@@ -262,6 +283,8 @@ function defaultForField(
       }
       return undefined;
     }
+    case "multi file":
+      return [];
     default:
       return undefined;
   }

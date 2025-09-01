@@ -11,7 +11,7 @@ import {
   StepperSeparator,
   StepperTrigger,
 } from "@/components/ui/stepper";
-import { seekerStepFields, stepForm } from "@/lib/constant";
+import { seekerStepFields, seekerStepForm } from "@/lib/constant";
 import {
   buildAllDefaults,
   buildAllStepsSchema,
@@ -45,11 +45,11 @@ const SeekerRolePage = () => {
     mode: "onChange",
   });
 
-  const currentMeta = stepForm.find((s) => s.step === step);
-  const isLastStep = step === stepForm.length;
+  const currentMeta = seekerStepForm.find((s) => s.step === step);
+  const isLastStep = step === seekerStepForm.length;
 
   const handleNext = () =>
-    setStep((prev) => Math.min(prev + 1, stepForm.length));
+    setStep((prev) => Math.min(prev + 1, seekerStepForm.length));
   const handleBack = () => {
     if (step === 1) router.back();
     else setStep((prev) => Math.max(prev - 1, 1));
@@ -89,7 +89,7 @@ const SeekerRolePage = () => {
           <div className="container flex-1 overflow-y-auto space-y-6">
             <div className="max-w-xs mx-auto space-y-4">
               <Stepper value={step} onValueChange={setStep}>
-                {stepForm.map((s) => (
+                {seekerStepForm.map((s) => (
                   <StepperItem
                     key={s.step}
                     step={s.step}
@@ -107,7 +107,7 @@ const SeekerRolePage = () => {
                         )}
                       </StepperIndicator>
                     </StepperTrigger>
-                    {s.step < stepForm.length && <StepperSeparator />}
+                    {s.step < seekerStepForm.length && <StepperSeparator />}
                   </StepperItem>
                 ))}
               </Stepper>

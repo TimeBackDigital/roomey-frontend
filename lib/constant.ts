@@ -1,4 +1,8 @@
-import { FieldConfig, OnboardingSchema, OnboardingStep } from "./type";
+import { FieldConfig, OnboardingStep } from "./type";
+
+export const SEEKER = "seeker";
+export const LISTER = "lister";
+export const ADMIN = "admin";
 
 export const providers = (
   handleSignInSocial: (type: "google" | "apple") => void
@@ -31,80 +35,6 @@ export const profilePhotoStep: OnboardingStep = {
     { label: "Choose a photo", type: "next" },
     { label: "Take a photo", type: "next" },
     { label: "Skip for now", type: "skip" },
-  ],
-};
-
-const verificationStep: OnboardingStep = {
-  id: "verification",
-  title: "Verified",
-  description: "Your account has been successfully verified.",
-  actions: [{ label: "Start exploring", type: "submit" }],
-};
-
-const seekerOnboarding: OnboardingSchema = {
-  role: "seeker",
-  steps: [
-    profilePhotoStep,
-    {
-      id: "permissions",
-      title: "Profile set up",
-      fields: [
-        {
-          name: "allowMarketing",
-          label: "I agree to receive marketing emails",
-          type: "checkbox",
-        },
-        {
-          name: "allowVerification",
-          label: "Verify and communicate through the Roomey platform",
-          type: "checkbox",
-          required: true,
-        },
-      ],
-      actions: [{ label: "Save", type: "next" }],
-    },
-  ],
-};
-
-const listerOnboarding: OnboardingSchema = {
-  role: "lister",
-  steps: [
-    {
-      id: "create-account",
-      title: "Create Account",
-      fields: [
-        {
-          name: "propertyName",
-          label: "Property Name",
-          type: "text",
-          required: true,
-        },
-      ],
-      actions: [{ label: "Create account", type: "next" }],
-    },
-    profilePhotoStep,
-    {
-      id: "permissions",
-      title: "Profile set up",
-      fields: [
-        {
-          name: "allowMarketing",
-          label: "I agree to receive marketing emails",
-          type: "checkbox",
-        },
-        {
-          name: "allowVerification",
-          label: "Verify and communicate through the Roomey platform",
-          type: "checkbox",
-          required: true,
-        },
-      ],
-      actions: [{ label: "Save", type: "next" }],
-    },
-    {
-      ...verificationStep,
-      actions: [{ label: "Start Listing", type: "submit" }],
-    },
   ],
 };
 
@@ -159,7 +89,7 @@ export const INVALID_NUM = "Please enter a valid number";
 export const INVALID_DATE = "Please select a valid date";
 export const INVALID_OPT = "Please select a valid option";
 
-export const stepForm = [
+export const seekerStepForm = [
   {
     step: 1,
     title: "Property & Location",
@@ -525,6 +455,341 @@ export const seekerStepFields: Record<number, FieldConfig[]> = {
         { label: "Natural Light", value: "natural_light" },
         { label: "Fast Internet/Wi-Fi", value: "fast_internet" },
         { label: "Near Public Transport", value: "near_public_transport" },
+        { label: "Furnished Room", value: "furnished_room" },
+        { label: "Washing Machine", value: "washing_machine" },
+      ],
+    },
+  ],
+};
+
+export const listerStepForm = [
+  {
+    step: 1,
+    title: "Showcase your place",
+    description:
+      "Add a clear title, standout photos, address, rent, bond, availability, and property type.",
+  },
+  {
+    step: 2,
+    title: "Home Details & Access",
+    description:
+      "Beds, baths, furnishing, parking options, and accessibility—everything seekers need",
+  },
+  {
+    step: 3,
+    title: "Tell your story",
+    description:
+      "Describe the place, the household, and friendly house rules to attract great matches",
+  },
+
+  {
+    step: 4,
+    title: "Living Arrangement",
+    description:
+      "Set house vibe, housemate preferences, guests, pets, smoking, cleaning, and included amenities. ",
+  },
+];
+
+export const listerStepFields: Record<number, FieldConfig[]> = {
+  1: [
+    {
+      name: "listing_photo",
+      label: "Listing Photo",
+      required: true,
+      type: "multi file",
+    },
+    {
+      name: "listing_title",
+      label: "Listing Title",
+      required: true,
+      type: "text",
+    },
+    { name: "address", label: "Address", required: true, type: "text" },
+    {
+      name: "rent_amount",
+      label: "Rent Amount",
+      required: true,
+      type: "number",
+    },
+    {
+      name: "rent_unit",
+      label: "Rent Unit",
+      required: true,
+      type: "select",
+      options: [
+        { label: "Week", value: "week" },
+        { label: "Month", value: "month" },
+        { label: "Day", value: "day" },
+        { label: "Hour", value: "hour" },
+        { label: "Year", value: "year" },
+      ],
+    },
+    {
+      name: "bond_amount",
+      label: "Bond Amount",
+      required: true,
+      type: "number",
+    },
+    {
+      name: "availability",
+      label: "Availability",
+      required: true,
+      type: "select",
+      options: [
+        { label: "Available Now", value: "available_now" },
+        { label: "Available Soon", value: "available_soon" },
+        { label: "Available Later", value: "available_later" },
+        { label: "Available Flexible", value: "available_flexible" },
+        { label: "Available Not Sure", value: "available_not_sure" },
+      ],
+    },
+
+    {
+      name: "minimum_stay",
+      label: "Minimum Stay",
+      required: true,
+      type: "select",
+      options: [
+        { label: "1 Week", value: "1_week" },
+        { label: "2 Weeks", value: "2_weeks" },
+        { label: "3 Weeks", value: "3_weeks" },
+        { label: "4 Weeks", value: "4_weeks" },
+        { label: "5 Weeks", value: "5_weeks" },
+      ],
+    },
+    {
+      name: "property_type",
+      label: "Property Type",
+      required: true,
+      type: "radio group",
+      options: [
+        { label: "House", value: "house" },
+        { label: "Apartment", value: "apartment" },
+        { label: "Unit", value: "unit" },
+        { label: "Townhouse", value: "townhouse" },
+        { label: "Granny Flat", value: "granny_flat" },
+        { label: "Studio", value: "studio" },
+      ],
+    },
+    {
+      name: "room_type",
+      label: "Room Type",
+      required: true,
+      type: "radio group",
+      options: [
+        { label: "Private Room", value: "private_room" },
+        { label: "Shared Room", value: "shared_room" },
+        { label: "Studio Type", value: "studio_type" },
+        { label: "Granny Flat", value: "granny_flat" },
+      ],
+    },
+  ],
+  2: [
+    {
+      name: "total_bedrooms",
+      label: "Total Bedrooms",
+      required: true,
+      type: "select",
+      options: [
+        { label: "1", value: "1" },
+        { label: "2", value: "2" },
+        { label: "3", value: "3" },
+        { label: "4", value: "4" },
+        { label: "5", value: "5" },
+      ],
+    },
+    {
+      name: "total_bathrooms",
+      label: "Bathrooms",
+      required: true,
+      type: "radio group",
+      options: [
+        { label: "Private", value: "private" },
+        { label: "Shared", value: "shared" },
+      ],
+    },
+    {
+      name: "furnishing",
+      label: "Furnishing",
+      required: true,
+      type: "radio group",
+      options: [
+        { label: "Furnished", value: "furnished" },
+        { label: "Unfurnished", value: "unfurnished" },
+      ],
+    },
+    {
+      name: "parking_space",
+      label: "Parking Space",
+      required: true,
+      type: "radio group",
+      options: [
+        { label: "Secured Garage", value: "secured_garage" },
+        { label: "Covered Carport", value: "covered_carport" },
+        { label: "Driveway Parking", value: "driveway_parking" },
+        { label: "Street Parking", value: "street_parking" },
+        { label: "Permit Parking", value: "permit_parking" },
+        { label: "No Parking Needed", value: "no_parking_needed_required" },
+      ],
+    },
+    {
+      name: "accessibility",
+      label: "Accessibility",
+      required: false,
+      type: "radio group",
+      description: "Only select if you have specific accessibility needs.",
+      options: [
+        { label: "Wheelchair Access", value: "wheelchair_access" },
+        { label: "Ground Floor", value: "ground_floor" },
+      ],
+    },
+  ],
+  3: [
+    {
+      name: "about_the_place",
+      label:
+        "About the place:layout, light, standout features, nearby transport",
+      required: true,
+      type: "textarea",
+    },
+    {
+      name: "about_the_household",
+      label: "About the household: who lives here, routines, vibe.",
+      required: true,
+      type: "textarea",
+    },
+    {
+      name: "house_rules_and_expectations",
+      label:
+        "House rules & expectations: quiet hours, guests, cleaning—clear and welcoming.",
+      required: true,
+      type: "textarea",
+    },
+  ],
+  // replace your current step 4
+  4: [
+    {
+      name: "housemate_preference",
+      label: "Housemate Preference",
+      required: false,
+      type: "checkbox",
+      isRow: true,
+      options: [
+        { label: "Male", value: "male" },
+        { label: "Female", value: "female" },
+        { label: "Any Gender", value: "any_gender" },
+        { label: "Couple", value: "couple" },
+      ],
+    },
+    {
+      name: "housemate_age_range",
+      label: "Housemate Age Range",
+      required: false,
+      type: "checkbox",
+      isRow: true,
+      options: [
+        { label: "18–25", value: "18_25" },
+        { label: "26–35", value: "26_35" },
+        { label: "36–45", value: "36_45" },
+        { label: "46+ / Mixed", value: "46_plus_mixed" },
+      ],
+    },
+    {
+      name: "preferred_housemate_type",
+      label: "Preferred Housemate Type",
+      required: false,
+      type: "checkbox",
+      isRow: true,
+      options: [
+        { label: "Any", value: "any" },
+        { label: "Student", value: "student" },
+        { label: "Full-Time Professional", value: "full_time_pro" },
+        { label: "Part-Time Professional", value: "part_time_pro" },
+        { label: "Business Owner", value: "business_owner" },
+        { label: "Unemployed", value: "unemployed" },
+        { label: "Retired", value: "retired" },
+      ],
+    },
+    {
+      name: "smoking_policy",
+      label: "Smoking",
+      required: true,
+      type: "radio group",
+      isRow: true,
+      options: [
+        { label: "Not Allowed", value: "not_allowed" },
+        { label: "Allowed Anywhere", value: "allowed_anywhere" },
+        { label: "Allowed Inside", value: "allowed_inside" },
+        { label: "Allowed Outside", value: "allowed_outside" },
+        { label: "Vaping Only", value: "vaping_only" },
+      ],
+    },
+    {
+      name: "pets_policy",
+      label: "Pets",
+      required: true,
+      type: "radio group",
+      isRow: false,
+      options: [
+        { label: "Yes", value: "yes" },
+        { label: "No", value: "no" },
+        { label: "Flexible", value: "flexible" },
+      ],
+    },
+    {
+      name: "guests_policy",
+      label: "Guests",
+      required: true,
+      type: "radio group",
+      isRow: true,
+      options: [
+        { label: "No Restrictions", value: "no_restrictions" },
+        { label: "Not Allowed", value: "not_allowed" },
+        { label: "Occasionally", value: "occasionally" },
+        { label: "Guests Welcome", value: "guests_welcome" },
+      ],
+    },
+    {
+      name: "cleaning_arrangements",
+      label: "Cleaning Arrangements",
+      required: true,
+      type: "radio group",
+      isRow: true,
+      options: [
+        { label: "Clean-As-You-Go", value: "clean_as_you_go" },
+        { label: "Cleaning Roster", value: "cleaning_roster" },
+        { label: "Professional Cleaner", value: "professional_cleaner" },
+      ],
+    },
+    {
+      name: "other_house_rules",
+      label: "Other House Rules",
+      required: false,
+      type: "checkbox",
+      isRow: true,
+      options: [
+        { label: "Quiet hours 10pm–7am", value: "quiet_hours_22_07" },
+        {
+          label: "Shared Responsibility For Common Areas",
+          value: "shared_common_areas",
+        },
+      ],
+    },
+    {
+      name: "amenities",
+      label: "Other benefits?",
+      description:
+        "Nice-to-have features that would make your living experience better.",
+      required: false,
+      type: "checkbox",
+      isRow: true,
+      options: [
+        { label: "Air Conditioning", value: "air_conditioning" },
+        { label: "Outdoor Space/Garden", value: "outdoor_space" },
+        { label: "Modern Kitchen", value: "modern_kitchen" },
+        { label: "Natural Light", value: "natural_light" },
+        { label: "Fast Internet/WiFi", value: "fast_internet" },
+        { label: "Near Public Transport", value: "near_transport" },
         { label: "Furnished Room", value: "furnished_room" },
         { label: "Washing Machine", value: "washing_machine" },
       ],

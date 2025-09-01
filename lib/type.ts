@@ -68,7 +68,8 @@ export type FieldConfig = {
     | "select"
     | "profile_photo"
     | "checkbox_agreement"
-    | "radio group";
+    | "radio group"
+    | "multi file";
   options?: FieldOption[];
 };
 
