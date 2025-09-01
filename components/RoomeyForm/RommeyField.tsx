@@ -46,6 +46,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
     e.preventDefault();
     pickFile();
   };
+
   return fields.map((f) => {
     if (f.name === "budget_amount") {
       const unitField = fields.find((ff) => ff.name === "budget_unit");
@@ -71,13 +72,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                       type="number"
                       inputMode="decimal"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value === ""
-                            ? undefined
-                            : Number(e.target.value)
-                        )
-                      }
+                      placeholder="$250"
                     />
                   </FormControl>
                   <FormMessage />
@@ -96,7 +91,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full bg-background-secondary">
                         <SelectValue
                           placeholder={unitField.placeholder || "Select"}
                         />
@@ -163,9 +158,8 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                             aria-pressed={active}
                             className={[
                               "border text-sm",
-                              "border-primary/15",
-                              active &&
-                                "border-primary bg-primary/10 text-primary",
+                              "border",
+                              active && "bg-primary text-background-secondary",
                             ]
                               .filter(Boolean)
                               .join(" ")}
@@ -278,29 +272,37 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                       value={field.value}
                       className={"flex flex-wrap gap-2"}
                     >
-                      {f.options?.map((opt) => {
-                        const active = field.value === opt.value;
-                        return (
-                          <Button
-                            key={opt.value}
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => field.onChange(opt.value)}
-                            aria-pressed={active}
-                            className={[
-                              "border text-sm",
-                              "border-primary/15",
-                              active &&
-                                "border-primary bg-primary/10 text-primary",
-                            ]
-                              .filter(Boolean)
-                              .join(" ")}
-                          >
-                            {opt.label}
-                          </Button>
-                        );
-                      })}
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        className="flex flex-wrap gap-2"
+                      >
+                        {f.options?.map((opt) => {
+                          const active = field.value === opt.value;
+
+                          return (
+                            <Button
+                              key={opt.value}
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                field.onChange(active ? undefined : opt.value);
+                              }}
+                              aria-pressed={active}
+                              className={[
+                                "border text-sm",
+                                active &&
+                                  "bg-primary text-background-secondary",
+                              ]
+                                .filter(Boolean)
+                                .join(" ")}
+                            >
+                              {opt.label}
+                            </Button>
+                          );
+                        })}
+                      </RadioGroup>
                     </RadioGroup>
                   </FormControl>
                   <div className="block">
@@ -338,7 +340,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                   <FormControl>
                     <div className="space-y-4">
                       <div
-                        className="rounded-xl h-46 border border-dashed border-muted-foreground/30 bg-muted/20 p-6 sm:p-8 text-center"
+                        className="rounded-xl h-46 border border-dashed border-muted-foreground/30 bg-muted/20 p-6 sm:p-8 text-center flex justify-center items-center"
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={(e) => {
                           e.preventDefault();
@@ -360,7 +362,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                         }}
                       >
                         {!(field.value instanceof File) ? (
-                          <div className="flex flex-col items-center gap-3">
+                          <div className="flex flex-col items-center justify-center gap-3">
                             <Images />
                             <p className="text-sm">+ Upload your best Photo</p>
                             <Button
@@ -368,7 +370,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                               className="inline-flex items-center gap-2"
                               onClick={onButtonPick}
                             >
-                              <CloudUpload className="h-4 w-4" />
+                              <CloudUpload className="h-8 w-8 text-white" />
                               Choose Photo
                             </Button>
                           </div>
@@ -494,9 +496,9 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                       <PopoverTrigger asChild>
                         <Button
                           type="button"
-                          variant="outline"
-                          className={`justify-between font-normal ${
-                            !selected ? "text-muted-foreground" : ""
+                          variant="outline_card"
+                          className={`justify-between font-normal bg-background-secondary ${
+                            !selected ? "text-muted-foreground text-sm" : ""
                           }`}
                         >
                           {selected
@@ -515,7 +517,6 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                             field.onChange(d ?? null);
                             setOpenPopover(null); // close popover
                           }}
-                          initialFocus
                         />
                       </PopoverContent>
                     </Popover>

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import z from "zod";
 import { ROLE_SLUG } from "./enum";
+import { formatErrorMessage } from "./helper";
 import { FieldConfig } from "./type";
 
 export function cn(...inputs: ClassValue[]) {
@@ -66,28 +67,57 @@ export const CapitalizeFirstLetter = (str: string) => {
 
 type StepConfig = Record<number, FieldConfig[]>;
 
-export const ErrorMap: z.ZodErrorMap = (issue, ctx) => {
+export const ErrorMap: z.ZodErrorMap = (issue) => {
   switch (issue.code) {
     case "invalid_enum_value":
-      return { message: "Please select a valid option" };
+      return {
+        message: `Please select a valid option for ${formatErrorMessage(
+          issue.path.join(" > ")
+        )}`,
+      };
     case "invalid_date":
-      return { message: "Please select a valid date" };
+      return {
+        message: `Please select a specific date for ${formatErrorMessage(
+          issue.path.join(" > ")
+        )}`,
+      };
     case "invalid_type": {
       const received = String(issue.received);
       const expected = String(issue.expected);
       if (received === "undefined" || received === "null") {
-        return { message: "This field is required" };
+        return {
+          message: `Please complete this field ${formatErrorMessage(
+            issue.path.join(" > ")
+          )}`,
+        };
       }
       if (expected === "number")
-        return { message: "Please enter a valid number" };
-      return { message: "Invalid input" };
+        return {
+          message: `Please enter a valid number for ${formatErrorMessage(
+            issue.path.join(" > ")
+          )}`,
+        };
+      return {
+        message: `Please enter a valid input ${formatErrorMessage(
+          issue.path.join(" > ")
+        )}`,
+      };
     }
     case "too_small":
     case "too_big":
     case "custom":
-      return { message: ctx.defaultError || "Invalid input" };
+      return {
+        message: `${"Please enter a valid input"} for ${formatErrorMessage(
+          issue.path.join(" > ")
+        )}`,
+      };
+
     default:
-      return { message: "Invalid input" };
+      return {
+        message: `Plase complete this field ${formatErrorMessage(
+          issue.path.join(" > ")
+        )}`,
+      };
   }
 };
 
@@ -109,14 +139,41 @@ function zodForField(f: FieldConfig): z.ZodTypeAny {
     }
 
     case "number": {
-      const schema = z
-        .union([z.number(), z.string()])
-        .transform((v) => (typeof v === "string" ? Number(v) : v))
-        .refine((v) => Number.isFinite(v), { message: INVALID });
+      const schema = z.preprocess(
+        // make empty string / null / undefined become undefined
+        (v) => (v === "" || v == null ? undefined : v),
+        // then coerce remaining value to number
+        z.coerce
+          .number()
+          .refine((n) => Number.isFinite(n), { message: "Invalid input" })
+      );
+
       return makeOptionalOrRequired(schema);
     }
+    case "select": {
+      const values = (f.options?.map((o) => o.value) ?? []).filter(
+        (v): v is string => typeof v === "string" && v.length > 0
+      );
 
-    case "select":
+      if (values.length > 0) {
+        const enumSchema = z.preprocess(
+          (v) => (v === "" || v == null ? undefined : v),
+          z.enum([values[0], ...values.slice(1)])
+        );
+        return makeOptionalOrRequired(enumSchema);
+      }
+
+      const s = z
+        .string()
+        .trim()
+        .min(1, REQUIRED)
+        .transform(
+          (v) => (v === "" ? undefined : v) as unknown as string | undefined
+        );
+
+      return makeOptionalOrRequired(s);
+    }
+
     case "radio group": {
       const values = f.options?.map((o) => o.value) ?? [];
       if (values.length > 0) {

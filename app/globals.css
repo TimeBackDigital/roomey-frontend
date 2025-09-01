@@ -163,4 +163,7 @@
   .ring-inactive {
     @apply border-[#d1d5db] text-[#d1d5db];
   }
+  .lucide {
+    @apply text-primary;
+  }
 }

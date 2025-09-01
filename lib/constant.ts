@@ -321,7 +321,7 @@ export const seekerStepFields: Record<number, FieldConfig[]> = {
     },
     {
       name: "date_of_birth",
-      label: "Date of Birth*",
+      label: "Date of Birth",
       required: true,
       type: "date",
     },

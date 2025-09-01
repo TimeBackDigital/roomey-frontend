@@ -40,7 +40,7 @@ const OnboardingPage = () => {
         <div className="flex flex-col gap-4">
           <Card className="py-3">
             <CardHeader className="flex items-center gap-4">
-              <ShieldCheck className="h-9 w-9" />
+              <ShieldCheck className="h-10 w-10 text-primary" />
               <div className="flex flex-col text-muted-foreground">
                 <h3 className="text-sm ">We care about your safety:</h3>
                 <p className="sub-p">

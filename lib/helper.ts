@@ -63,3 +63,16 @@ export const authenticationAction = {
     }
   },
 };
+
+export const formatErrorMessage = (error: string) => {
+  return error.replaceAll("_", " ");
+};
+
+export const capitalizeFirstLetters = (text: string) => {
+  return text
+    .replaceAll("_", " ")
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};

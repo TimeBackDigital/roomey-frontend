@@ -1,5 +1,6 @@
 "use client";
 
+import ErrorCard from "@/components/Cards/ErrorCard";
 import RenderFields from "@/components/RoomeyForm/RommeyField";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -74,58 +75,69 @@ const SeekerRolePage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen h-full">
+    <div className="flex min-h-[90vh] flex-col">
       <ProfileCreationHeader
         onBack={handleBack}
         currentMeta={currentMeta?.title ?? ""}
       />
-      <div className="container space-y-10">
-        <div className="max-w-xs mx-auto space-y-4">
-          <Stepper value={step} onValueChange={setStep}>
-            {stepForm.map((s) => (
-              <StepperItem
-                key={s.step}
-                step={s.step}
-                className="not-last:flex-1"
-              >
-                <StepperTrigger>
-                  <StepperIndicator
-                    className="
-              
-                   data-[state=inactive]:ring-inactive
-        
-                 "
-                    asChild
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-1 flex-col"
+        >
+          <div className="container flex-1 overflow-y-auto space-y-6">
+            <div className="max-w-xs mx-auto space-y-4">
+              <Stepper value={step} onValueChange={setStep}>
+                {stepForm.map((s) => (
+                  <StepperItem
+                    key={s.step}
+                    step={s.step}
+                    className="not-last:flex-1"
                   >
-                    {s.step < step ? <CheckIcon className="w-3 h-3" /> : s.step}
-                  </StepperIndicator>
-                </StepperTrigger>
-                {s.step < stepForm.length && <StepperSeparator />}
-              </StepperItem>
-            ))}
-          </Stepper>
-          {currentMeta?.description && (
-            <p className="text-center font-bold whitespace-pre-line">
-              {currentMeta.description}
-            </p>
-          )}
-        </div>
+                    <StepperTrigger>
+                      <StepperIndicator
+                        className="data-[state=inactive]:ring-inactive"
+                        asChild
+                      >
+                        {s.step < step ? (
+                          <CheckIcon className="w-3 h-3 text-white" />
+                        ) : (
+                          s.step
+                        )}
+                      </StepperIndicator>
+                    </StepperTrigger>
+                    {s.step < stepForm.length && <StepperSeparator />}
+                  </StepperItem>
+                ))}
+              </Stepper>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 flex flex-col h-full"
-          >
-            <RenderFields control={form.control} fields={currentFields} />
-
-            <div className="flex-1 my-auto flex justify-end items-center">
-              <Button type="submit" size="lg" className="w-full ">
-                Continue
-              </Button>
+              {currentMeta?.description && (
+                <p className="text-center font-bold whitespace-pre-line">
+                  {currentMeta.description}
+                </p>
+              )}
             </div>
-          </form>
-        </Form>
-      </div>
+
+            <RenderFields control={form.control} fields={currentFields} />
+          </div>
+
+          <div className="container py-4 flex flex-col justify-end gap-4">
+            {Object.entries(form.formState.errors).length > 0 && (
+              <ErrorCard Errors={form.formState.errors} />
+            )}
+
+            <Button
+              // disabled={!form.formState.isValid}
+              type="submit"
+              size="lg"
+              className="w-full"
+            >
+              Continue
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 };
