@@ -1,9 +1,9 @@
 "use client";
 
-import { ArrowLeft, HousePlus, ShieldCheck, UserSearch } from "lucide-react";
+import { HousePlus, ShieldCheck, UserSearch } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import ProfileCreationHeader from "./OnboardingRolePage/ProfileCreationHeader";
 
 const choices = [
   {
@@ -23,17 +23,10 @@ const choices = [
 ];
 
 const OnboardingPage = () => {
-  const router = useRouter();
   return (
     <>
-      <div className="bg-primary h-14 flex items-center justify-center relative">
-        <div className="flex items-center gap-2">
-          <div onClick={() => router.back()} className="absolute left-4">
-            <ArrowLeft className="size-4 text-white" />
-          </div>
-          <div className="text-white text-lg font-medium">Create Profile</div>
-        </div>
-      </div>
+      <ProfileCreationHeader currentMeta="Create Profile" />
+
       <div className="container">
         <div role="status" className="text-center pb-4">
           <div className="text-[40px]">🎉</div>

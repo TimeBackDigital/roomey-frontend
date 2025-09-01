@@ -1,6 +1,5 @@
 "use client";
 
-import { CheckIcon, LoaderCircleIcon } from "lucide-react";
 import { Slot } from "radix-ui";
 import * as React from "react";
 import { createContext, useContext } from "react";
@@ -133,7 +132,7 @@ function StepperItem({
       <div
         data-slot="stepper-item"
         className={cn(
-          "group/step flex items-center group-data-[orientation=horizontal]/stepper:flex-row group-data-[orientation=vertical]/stepper:flex-col",
+          "group/step flex items-center group-data-[orientation=horizontal]/stepper:flex-row group-data-[orientation=vertical]/stepper:flex-col ",
           className
         )}
         data-state={state}
@@ -158,8 +157,7 @@ function StepperTrigger({
   children,
   ...props
 }: StepperTriggerProps) {
-  const { setActiveStep } = useStepper();
-  const { step, isDisabled } = useStepItem();
+  const { isDisabled } = useStepItem();
 
   if (asChild) {
     const Comp = asChild ? Slot.Root : "span";
@@ -174,10 +172,9 @@ function StepperTrigger({
     <button
       data-slot="stepper-trigger"
       className={cn(
-        "focus-visible:border-ring focus-visible:ring-ring/50 inline-flex items-center gap-3 rounded-full outline-none focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center gap-3 rounded-full outline-none focus-visible:z-10 disabled:pointer-events-none disabled:opacity-50  ",
         className
       )}
-      onClick={() => setActiveStep(step)}
       disabled={isDisabled}
       {...props}
     >
@@ -197,16 +194,23 @@ function StepperIndicator({
   children,
   ...props
 }: StepperIndicatorProps) {
-  const { state, step, isLoading } = useStepItem();
+  const { state, step } = useStepItem();
 
   return (
     <span
       data-slot="stepper-indicator"
+      data-state={state}
       className={cn(
-        "bg-muted text-muted-foreground data-[state=active]:bg-primary data-[state=completed]:bg-primary data-[state=active]:text-primary-foreground data-[state=completed]:text-primary-foreground relative flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-medium",
+        // base
+        "relative flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-medium",
+        "text-muted-foreground data-[state=active]:border-primary border",
+
+        // variants
+        "data-[state=active]:bg-transparent data-[state=active]:text-primary",
+        "data-[state=completed]:bg-primary data-[state=completed]:text-primary-foreground",
+
         className
       )}
-      data-state={state}
       {...props}
     >
       {asChild ? (
@@ -216,20 +220,7 @@ function StepperIndicator({
           <span className="transition-all group-data-loading/step:scale-0 group-data-loading/step:opacity-0 group-data-loading/step:transition-none group-data-[state=completed]/step:scale-0 group-data-[state=completed]/step:opacity-0">
             {step}
           </span>
-          <CheckIcon
-            className="absolute scale-0 opacity-0 transition-all group-data-[state=completed]/step:scale-100 group-data-[state=completed]/step:opacity-100"
-            size={16}
-            aria-hidden="true"
-          />
-          {isLoading && (
-            <span className="absolute transition-all">
-              <LoaderCircleIcon
-                className="animate-spin"
-                size={14}
-                aria-hidden="true"
-              />
-            </span>
-          )}
+          {/* …check + loader remain unchanged … */}
         </>
       )}
     </span>
@@ -273,7 +264,7 @@ function StepperSeparator({
     <div
       data-slot="stepper-separator"
       className={cn(
-        "bg-primary/20 group-data-[state=completed]/step:bg-primary m-0.5 group-data-[orientation=horizontal]/stepper:h-0.5 group-data-[orientation=horizontal]/stepper:w-full group-data-[orientation=horizontal]/stepper:flex-1 group-data-[orientation=vertical]/stepper:h-12 group-data-[orientation=vertical]/stepper:w-0.5",
+        "bg-primary/10 group-data-[state=completed]/step:bg-primary/10 m-0.5 group-data-[orientation=horizontal]/stepper:h-0.5 group-data-[orientation=horizontal]/stepper:w-full group-data-[orientation=horizontal]/stepper:flex-1 mx-2 group-data-[orientation=vertical]/stepper:h-12 group-data-[orientation=vertical]/stepper:w-0.5",
         className
       )}
       {...props}

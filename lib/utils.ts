@@ -24,7 +24,6 @@ export const getRoleSegment = (role: unknown): string | undefined => {
 
 export const CheckEmail = (s: string) => /\S+@\S+\.\S+/.test(s);
 
-// Very permissive: digits with optional +, spaces, dashes, parentheses
 export const CheckPhone = (s: string) => /^[+]?[\d\s\-().]{7,20}$/.test(s);
 
 export const NormalizePhone = (raw: string) => {
@@ -104,14 +103,12 @@ function zodForField(f: FieldConfig): z.ZodTypeAny {
   switch (f.type) {
     case "text":
     case "textarea": {
-      // no constructor options -> no chance of the “message + error” clash
       let schema = z.string().trim();
       if (isFieldRequired) schema = schema.min(1, REQUIRED);
       return makeOptionalOrRequired(schema);
     }
 
     case "number": {
-      // accept string, coerce to number, generic invalid message
       const schema = z
         .union([z.number(), z.string()])
         .transform((v) => (typeof v === "string" ? Number(v) : v))
@@ -123,38 +120,36 @@ function zodForField(f: FieldConfig): z.ZodTypeAny {
     case "radio group": {
       const values = f.options?.map((o) => o.value) ?? [];
       if (values.length > 0) {
-        // Avoid enum options object to be compatible across Zod versions
         const enumSchema = z.enum(values as [string, ...string[]]);
         return makeOptionalOrRequired(enumSchema);
       }
-      // Fallback if options not ready yet
+
       let s = z.string().trim();
       if (isFieldRequired) s = s.min(1, REQUIRED);
       return makeOptionalOrRequired(s);
     }
 
     case "checkbox": {
-      // multi-select
-      let arr = z.array(z.string()).default([]);
-      if (isFieldRequired)
-        arr = arr.refine((v) => v.length > 0, { message: REQUIRED });
-      return makeOptionalOrRequired(arr);
+      let arr = z.array(z.string());
+      if (isFieldRequired) {
+        arr = arr.min(1, { message: REQUIRED });
+      }
+      arr = makeOptionalOrRequired(arr);
+      return arr;
     }
 
     case "date": {
-      // coerce from string; also ensure valid date
       const d = z.coerce
         .date()
         .refine((v) => !Number.isNaN(v.getTime()), { message: INVALID });
-      // requiredness handled by optional() wrapper
+
       return makeOptionalOrRequired(d);
     }
 
     case "file": {
-      // Keep it lenient; add a simple required check if needed
-      let any = z.any();
+      let any = z.instanceof(File);
       if (isFieldRequired) {
-        any = any.refine((v) => v != null && v !== "", { message: REQUIRED });
+        any = any.refine((v: File) => v != null, { message: REQUIRED });
       }
       return makeOptionalOrRequired(any);
     }

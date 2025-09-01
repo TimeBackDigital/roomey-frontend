@@ -51,7 +51,7 @@
   --background-secondary: #fafafa;
   --foreground: oklch(0.145 0 0); /* text black */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: #ecedef;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: #414b57;
@@ -156,5 +156,11 @@
   }
   .table-text {
     @apply text-[#68c77];
+  }
+  .card-background {
+    @apply bg-[#ecedef];
+  }
+  .ring-inactive {
+    @apply border-[#d1d5db] text-[#d1d5db];
   }
 }
