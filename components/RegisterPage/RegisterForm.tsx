@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { PasswordInput } from "../ui/password-input";
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -181,10 +182,9 @@ const RegisterForm = () => {
                   <FormItem>
                     <FormLabel>Password*</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         icon={<LockKeyhole className="size-5" />}
                         id="password"
-                        type="password"
                         placeholder="Password"
                         {...field}
                       />
