@@ -18,7 +18,7 @@ const ProfileCreationHeader = ({ currentMeta, onBack }: Props) => {
   };
 
   return (
-    <div className="bg-primary h-14 block flex items-center justify-center relative border-2">
+    <div className="bg-primary h-14 flex items-center justify-center relative">
       <div className="flex items-center gap-2">
         <div onClick={handleBack} className="absolute left-4 cursor-pointer">
           <ArrowLeft className="size-4 text-white" />
