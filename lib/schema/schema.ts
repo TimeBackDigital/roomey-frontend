@@ -1,4 +1,3 @@
-import { phoneNumber } from "better-auth/plugins";
 import { z } from "zod";
 
 export const phoneRegex = /^[+]?[\d\s\-().]{7,20}$/;
@@ -14,19 +13,27 @@ export const LoginSchema = z.object({
 
 export const RegisterSchema = z.object({
   displayName: z.string().min(1, "Display name is required"),
-  email: z.email("Invalid email"),
+  email: z.string().email("Invalid email"),
   phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
   password: z.string().min(6, "Password must be at least 6 characters").max(25),
   terms: z.boolean(),
 });
 
+export const LoginSchemaWithType = LoginSchema.extend({
+  type: z.literal("login"),
+});
+
+export const RegisterSchemaWithType = RegisterSchema.extend({
+  type: z.literal("register"),
+});
+
 export const UnionSchema = z.discriminatedUnion("type", [
-  LoginSchema,
-  RegisterSchema,
+  LoginSchemaWithType,
+  RegisterSchemaWithType,
 ]);
 
 export const ForgotPasswordSchema = z.object({
-  email: z.email(),
+  email: z.string().email("Invalid email"),
 });
 
 export const OtpVerificationSchema = z.object({
@@ -34,7 +41,7 @@ export const OtpVerificationSchema = z.object({
 });
 
 export const OtpVerificationPhoneSchema = z.object({
-  phoneNumber: phoneNumber(),
+  phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
 });
 
 export const ResetPasswordSchema = z
@@ -117,7 +124,7 @@ const CreateUserSchema = z
     path: ["confirmPassword"],
   });
 
-export const AdminMOdalFormSchema = z.discriminatedUnion("action", [
+export const AdminMOdalFormSchema = z.union([
   AdminModalSchema,
   CreateUserSchema,
 ]);

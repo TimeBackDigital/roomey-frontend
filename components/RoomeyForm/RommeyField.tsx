@@ -1,6 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,240 +17,496 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldConfig } from "@/lib/type";
-import { UserCircle } from "lucide-react";
+import { Check, ChevronDownIcon, CloudUpload, ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 import { Control, FieldValues } from "react-hook-form";
 import { Button } from "../ui/button";
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { RadioGroup } from "../ui/radio-group";
 
 type RenderFieldsProps = {
   control: Control<FieldValues>;
   fields: FieldConfig[];
-  nextStep: () => void;
 };
 
-const RenderFields = ({ control, fields, nextStep }: RenderFieldsProps) => {
-  return fields.map((f) => (
-    <FormField
-      key={f.name}
-      control={control}
-      name={f.name}
-      render={({ field }) => {
-        switch (f.type) {
-          case "checkbox_agreement":
-            return (
-              <FormItem className="flex flex-col items-center justify-center space-x-3 space-y-0">
-                <div className="flex flex-col justify-center items-center gap-4">
-                  <Image
-                    src={"/assets/avatar/onboarding_avatar.webp"}
-                    alt="Profile Preview"
-                    width={500}
-                    height={500}
-                    className="rounded-full w-52 h-52 object-cover"
-                  />
-                </div>
-                <div className="flex flex-row items-start space-x-3 space-y-0">
+const RenderFields = ({ control, fields }: RenderFieldsProps) => {
+  const [openPopover, setOpenPopover] = useState<string | null>(null);
+  return fields.map((f) => {
+    if (f.name === "budget_amount") {
+      const unitField = fields.find((ff) => ff.name === "budget_unit");
+      return (
+        <div key="budget-group" className="space-y-2">
+          <FormLabel>
+            {f.label} {f.required && <span>*</span>}
+          </FormLabel>
+          <div className="grid grid-cols-2 gap-3">
+            {/* amount */}
+            <FormField
+              control={control}
+              name="budget_amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      min={0}
+                      placeholder={f.placeholder ?? "250"}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* unit */}
+            <FormField
+              control={control}
+              name="budget_unit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={unitField?.placeholder || "Select"}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {unitField?.options?.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (f.name === "budget_unit") return null;
+
+    return (
+      <FormField
+        key={f.name}
+        control={control}
+        name={f.name}
+        render={({ field }) => {
+          switch (f.type) {
+            case "checkbox": {
+              // Multi-select (array) when options exist
+              if (f.options?.length) {
+                const values: string[] = Array.isArray(field.value)
+                  ? field.value
+                  : [];
+
+                const toggle = (val: string) => {
+                  const next = new Set(values);
+                  next.has(val) ? next.delete(val) : next.add(val);
+                  field.onChange(Array.from(next));
+                };
+
+                return (
+                  <FormItem className={"flex flex-wrap gap-2"}>
+                    <FormLabel className="mb-1">
+                      {f.label} {f.required && <span>*</span>}
+                    </FormLabel>
+                    {f.description && (
+                      <FormDescription>{f.description}</FormDescription>
+                    )}
+
+                    <div className="flex flex-wrap gap-2">
+                      {f.options.map((opt) => {
+                        const active = values.includes(opt.value);
+                        return (
+                          <Button
+                            key={opt.value}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggle(opt.value)}
+                            aria-pressed={active}
+                            className={[
+                              "border text-sm",
+                              "border-primary/15",
+                              active &&
+                                "border-primary bg-primary/10 text-primary",
+                            ]
+                              .filter(Boolean)
+                              .join(" ")}
+                          >
+                            {opt.label}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <FormMessage />
+                  </FormItem>
+                );
+              }
+
+              // Single boolean (no options)
+              return (
+                <FormItem className="flex items-start gap-3">
                   <FormControl>
                     <Checkbox
-                      checked={field.value || false}
+                      checked={!!field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none w-full">
                     <FormLabel>{f.label}</FormLabel>
                   </div>
-                </div>
-                <FormMessage />
-              </FormItem>
-            );
-          case "checkbox":
-            return (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value || false}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none w-full">
-                  <FormLabel>{f.label}</FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            );
+                  <FormMessage />
+                </FormItem>
+              );
+            }
 
-          // Select
-          case "select":
-            return (
-              <FormItem>
-                <FormLabel>{f.label}</FormLabel>
-                <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={f.placeholder || "Select..."} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {f.options?.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
+            case "select":
+              return (
+                <FormItem>
+                  <FormLabel>
+                    {f.label}
+                    {f.required && <span>*</span>}
+                  </FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={f.placeholder || "Select..."}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {f.options?.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
 
-          // Textarea
-          case "textarea":
-            return (
-              <FormItem>
-                <FormLabel>{f.label}</FormLabel>
-                <FormControl>
-                  <Textarea placeholder={f.placeholder} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
+            case "textarea": {
+              const min = 50;
+              const max = 300;
 
-          case "file":
-            return (
-              <FormItem>
-                <FormLabel>{f.label}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    onChange={(e) => field.onChange(e.target.files?.[0])}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
+              const val = typeof field.value === "string" ? field.value : "";
+              const len = val.length;
+              const remaining = Math.max(0, max - len);
 
-          case "profile_photo":
-            return (
-              <FormItem className="text-center flex flex-col justify-between h-[80vh]">
-                <div className="space-y-4">
-                  <h3>Add a profile photo</h3>
-                  <h3 className="font-normal">{f.title}</h3>
-
-                  <p>{f.description}</p>
-                </div>
-
-                <FormControl>
-                  <div className="flex flex-col items-center gap-4">
-                    {field.value ? (
-                      <Image
-                        src={URL.createObjectURL(field.value)}
-                        alt="Profile Preview"
-                        width={500}
-                        height={500}
-                        className="rounded-full w-52 h-52 object-cover"
-                      />
-                    ) : (
-                      <UserCircle className="w-42 h-42 text-primary" />
-                    )}
-
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      id={`${f.name}-input`}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          field.onChange(file);
-                        }
-                      }}
+              return (
+                <FormItem>
+                  <FormLabel>
+                    {f.label}
+                    {f.required && <span>*</span>}
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={f.placeholder}
+                      value={val}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      maxLength={max}
+                      className="h-40" // hard cap at 300
+                      aria-describedby={`${f.name}-counter`}
                     />
-                    <FormMessage />
-                  </div>
-                </FormControl>
+                  </FormControl>
 
-                <div className="space-y-2 w-full">
-                  {!field.value ? (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        onClick={() =>
-                          document.getElementById(`${f.name}-input`)?.click()
-                        }
-                        type="button"
-                      >
-                        Choose a photo
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        type="button"
-                        onClick={() => {
-                          const input = document.createElement("input");
-                          input.type = "file";
-                          input.accept = "image/*";
-                          input.capture = "user";
-                          input.onchange = function (
-                            this: GlobalEventHandlers,
-                            ev: Event
-                          ) {
-                            const file = (ev.target as HTMLInputElement)
-                              .files?.[0];
-                            if (file) field.onChange(file);
-                          };
-                          input.click();
-                        }}
-                      >
-                        Take a photo
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        onClick={() =>
-                          document.getElementById(`${f.name}-input`)?.click()
-                        }
-                        type="button"
-                      >
-                        Replace photo
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        type="button"
-                        onClick={nextStep}
-                      >
-                        Next
-                      </Button>
-                    </>
+                  <FormDescription>
+                    {" "}
+                    {`${remaining} characters remaining (min ${min}, max ${max})`}
+                  </FormDescription>
+
+                  <FormMessage />
+                </FormItem>
+              );
+            }
+
+            case "radio group": {
+              return (
+                <FormItem className={`${f.isRow ? "flex flex-wrap" : ""}`}>
+                  <FormLabel className="mb-1">
+                    {f.label}
+                    {f.required && <span>*</span>}
+                  </FormLabel>
+                  {f.description && (
+                    <FormDescription>{f.description}</FormDescription>
                   )}
-                </div>
-              </FormItem>
-            );
 
-          default:
-            return (
-              <FormItem>
-                <FormLabel>{f.label}</FormLabel>
-                <FormControl>
-                  <Input
-                    type={f.type || "text"}
-                    placeholder={f.placeholder}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-        }
-      }}
-    />
-  ));
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className={"flex flex-wrap gap-2"}
+                    >
+                      {f.options?.map((opt) => {
+                        const active = field.value === opt.value;
+                        return (
+                          <Button
+                            key={opt.value}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => field.onChange(opt.value)}
+                            aria-pressed={active}
+                            className={[
+                              "border text-sm",
+                              "border-primary/15",
+                              active &&
+                                "border-primary bg-primary/10 text-primary",
+                            ]
+                              .filter(Boolean)
+                              .join(" ")}
+                          >
+                            {opt.label}
+                          </Button>
+                        );
+                      })}
+                    </RadioGroup>
+                  </FormControl>
+                </FormItem>
+              );
+            }
+
+            case "file": {
+              const isProfilePhoto = f.name === "profile_photo";
+              if (!isProfilePhoto) {
+                return (
+                  <FormItem>
+                    <FormLabel>
+                      {f.label}
+                      {f.required && <span>*</span>}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        onChange={(e) => field.onChange(e.target.files?.[0])}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }
+
+              const inputId = `${f.name}-input`;
+              const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+              const pickFile = () => document.getElementById(inputId)?.click();
+
+              return (
+                <FormItem>
+                  <FormControl>
+                    <div className="space-y-4">
+                      {/* Dropzone-style area */}
+                      <div
+                        className="rounded-xl border border-dashed border-muted-foreground/30 bg-muted/20 p-6 sm:p-8 text-center"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const file = e.dataTransfer.files?.[0];
+                          if (!file) return;
+                          if (!/^image\/(png|jpe?g)$/i.test(file.type)) return;
+                          if (file.size > MAX_FILE_SIZE) return;
+                          field.onChange(file);
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onClick={pickFile}
+                      >
+                        {!field.value ? (
+                          <div className="flex flex-col items-center gap-3">
+                            <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">
+                              + Upload your best Photo
+                            </p>
+                            <Button
+                              type="button"
+                              className="inline-flex items-center gap-2"
+                              onClick={pickFile}
+                            >
+                              <CloudUpload className="h-4 w-4" />
+                              Choose Photo
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center  gap-4">
+                            <Image
+                              src={URL.createObjectURL(field.value)}
+                              alt="Profile preview"
+                              width={500}
+                              height={500}
+                              className="h-40 w-40 rounded-full object-cover"
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={pickFile}
+                              >
+                                Replace Photo
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => field.onChange(null)}
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        <input
+                          id={inputId}
+                          type="file"
+                          accept="image/png,image/jpeg"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            if (!/^image\/(png|jpe?g)$/i.test(file.type))
+                              return;
+                            if (file.size > MAX_FILE_SIZE) return;
+                            field.onChange(file);
+                          }}
+                        />
+                      </div>
+
+                      {/* Tips */}
+                      <div className="flex flex-col justify-center items-center">
+                        <p className="font-semibold">
+                          Photo Tips for Maximum Impact:
+                        </p>
+                        <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                          <li className="flex items-start gap-2">
+                            <Check className="mt-0.5 h-3 w-3" /> Clear, well-lit
+                            face shot works best
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Check className="mt-0.5 h-3 w-3" /> Smile naturally
+                            — more approachable
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Check className="mt-0.5 h-3 w-3" /> Avoid group
+                            photos or sunglasses
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Check className="mt-0.5 h-3 w-3" /> High resolution
+                            (≥ 200×200px)
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Check className="mt-0.5 h-3 w-3" /> JPG or PNG,
+                            under 5 MB
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }
+
+            case "number":
+              return (
+                <FormItem>
+                  <FormLabel>
+                    {f.label}
+                    {f.required && <span>*</span>}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder={f.placeholder}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+
+            case "date": {
+              const selected: Date | undefined = field.value
+                ? new Date(field.value)
+                : undefined;
+
+              return (
+                <FormItem>
+                  <FormLabel>
+                    {f.label}
+                    {f.required && <span>*</span>}
+                  </FormLabel>
+                  <FormControl>
+                    <Popover
+                      open={openPopover === f.name}
+                      onOpenChange={(o) => setOpenPopover(o ? f.name : null)}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className={`justify-between font-normal ${
+                            !selected ? "text-muted-foreground" : ""
+                          }`}
+                        >
+                          {selected
+                            ? selected.toLocaleDateString()
+                            : f.placeholder ?? "Select date"}
+                          <ChevronDownIcon />
+                        </Button>
+                      </PopoverTrigger>
+
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={selected ?? undefined}
+                          captionLayout="dropdown"
+                          onSelect={(d) => {
+                            field.onChange(d ?? null); // save to RHF
+                            setOpenPopover(null); // close popover
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }
+
+            default:
+              return (
+                <FormItem>
+                  <FormLabel>
+                    {f.label}
+                    {f.required && <span>*</span>}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type={f.type || "text"}
+                      placeholder={f.placeholder}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+          }
+        }}
+      />
+    );
+  });
 };
 
 export default RenderFields;

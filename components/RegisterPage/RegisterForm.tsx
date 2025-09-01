@@ -29,7 +29,6 @@ import RoomeyText from "../ui/roomey";
 
 const RegisterForm = () => {
   const [success, setSuccess] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
 
   const registerDefaults: RegisterSchemaType = {
@@ -95,13 +94,13 @@ const RegisterForm = () => {
     }
   };
 
-  if (true) {
+  if (success) {
     return (
       <GreetingModal
         title="Check your inbox"
         description="We've sent you a magic link"
         secondaryDescription="Click it to continue"
-        isOpen={true}
+        isOpen={success}
         onOpenChange={setSuccess}
       />
     );

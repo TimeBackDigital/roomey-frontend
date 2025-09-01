@@ -108,41 +108,6 @@ const listerOnboarding: OnboardingSchema = {
   ],
 };
 
-const agencyOnboarding: OnboardingSchema = {
-  role: "agency",
-  steps: [
-    profilePhotoStep,
-    {
-      id: "permissions",
-      title: "Profile set up",
-      fields: [
-        {
-          name: "allowMarketing",
-          label: "I agree to receive marketing emails",
-          type: "checkbox",
-        },
-        {
-          name: "allowVerification",
-          label: "Verify and communicate through the Roomey platform",
-          type: "checkbox",
-          required: true,
-        },
-      ],
-      actions: [{ label: "Save", type: "next" }],
-    },
-    {
-      ...verificationStep,
-      actions: [{ label: "Start Listing", type: "submit" }],
-    },
-  ],
-};
-
-export const onboardingSchemas: OnboardingSchema[] = [
-  seekerOnboarding,
-  listerOnboarding,
-  agencyOnboarding,
-];
-
 export const RoleList = [
   {
     label: "Admin",
@@ -187,3 +152,9 @@ export const AdminModalData: Record<
     button: "Create User",
   },
 };
+
+export const REQUIRED = "This field is required";
+export const INVALID = "Invalid input";
+export const INVALID_NUM = "Please enter a valid number";
+export const INVALID_DATE = "Please select a valid date";
+export const INVALID_OPT = "Please select a valid option";

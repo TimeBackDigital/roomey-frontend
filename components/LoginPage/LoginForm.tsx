@@ -5,9 +5,9 @@ import { LoginSchema, LoginSchemaType } from "@/lib/schema/schema";
 import { CaptchaApi } from "@/lib/type";
 import { CheckEmail, NormalizePhone } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ErrorContext } from "better-auth/react";
 import { LockKeyhole, User } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -25,6 +25,7 @@ import { Input } from "../ui/input";
 import RoomeyText from "../ui/roomey";
 
 const LoginForm = () => {
+  const router = useRouter();
   const loginDefaults: LoginSchemaType = {
     identifier: "",
     password: "",
@@ -52,17 +53,10 @@ const LoginForm = () => {
       if (CheckEmail(identifier)) {
         const { error } = await signIn.email({
           email: identifier,
-          password: password,
+          password,
+          callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
           fetchOptions: {
             headers: { "x-captcha-response": token ?? "" },
-            onError: async (error: ErrorContext) => {
-              if (error.error.code === "EMAIL_NOT_VERIFIED") {
-                await signIn.magicLink({
-                  email: identifier,
-                  callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
-                });
-              }
-            },
           },
         });
 
@@ -71,6 +65,7 @@ const LoginForm = () => {
           return;
         }
 
+        router.refresh();
         return;
       }
 
@@ -79,16 +74,18 @@ const LoginForm = () => {
       const { error } = await authClient.signIn.phoneNumber({
         phoneNumber:
           process.env.NODE_ENV === "development" ? "+18777804236" : phone,
-        password: password,
+        password,
         fetchOptions: {
           headers: { "x-captcha-response": token ?? "" },
         },
       });
 
       if (error) {
-        toast.error(error.message ?? "Failed to send OTP");
+        toast.error(error.message ?? "Failed to sign in");
         return;
       }
+
+      router.push("/callback"); // <-- call here after success
     } catch {
       toast.error("Sign in failed");
     }

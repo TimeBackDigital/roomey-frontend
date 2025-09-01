@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { PUBLIC_ROUTES, ROLE_PREFIX } from "./constant";
 import { BetterUser } from "./type";
 
@@ -33,17 +34,32 @@ export const authenticationAction = {
     if (!user) return "/auth";
 
     if (!user.phoneNumberVerified) {
-      return "/otp-verification";
+      throw redirect("/otp-verification");
     }
 
     if (!user.user_is_onboarded) {
-      return "/onboarding";
+      throw redirect("/onboarding");
     }
 
-    if (user.role === "seeker") {
-      return "/";
+    const path =
+      user.role === "seeker"
+        ? "/dashboard"
+        : `/${getRoleSlug(user.role)}/dashboard`;
+
+    throw redirect(path);
+  },
+  onBoarding: (user: BetterUser) => {
+    if (!user || !user.role) {
+      redirect("/");
     }
 
-    return `/${getRoleSlug(user.role)}/dashboard`;
+    if (user.user_is_onboarded) {
+      const path =
+        user.role === "seeker"
+          ? "/dashboard"
+          : `/${getRoleSlug(user.role)}/dashboard`;
+
+      throw redirect(path);
+    }
   },
 };

@@ -54,6 +54,8 @@ export type FieldConfig = {
   placeholder?: string;
   title?: string;
   description?: string;
+  isRow?: boolean;
+  required?: boolean;
   type?:
     | "text"
     | "email"
@@ -65,9 +67,12 @@ export type FieldConfig = {
     | "file"
     | "select"
     | "profile_photo"
-    | "checkbox_agreement";
+    | "checkbox_agreement"
+    | "radio group";
   options?: FieldOption[];
 };
+
+export type DefaultStrategy = "empty" | "firstOption";
 
 export type UserListType = {
   id: string;
