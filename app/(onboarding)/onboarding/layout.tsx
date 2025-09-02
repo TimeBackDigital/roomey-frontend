@@ -1,24 +1,18 @@
-"use client";
-
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import OnboardingNavigation from "@/components/Navigation/OnboardingNavigation/OnboardingNavigation";
-import { useUser } from "@/components/Providers/AuthProvider";
-import { ExtractFirstLetterRole } from "@/lib/utils";
-import { redirect } from "next/navigation";
+import getServerSession from "@/lib/auth/server-session";
+import { authenticationAction } from "@/lib/helper";
+import { BetterUser } from "@/lib/type";
 import React from "react";
 
-const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useUser();
+const OnboardingLayout = async ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const user = await getServerSession();
 
-  if (!user) {
-    return redirect("/auth");
-  }
-
-  if (user?.user_is_onboarded) {
-    return redirect(
-      `${ExtractFirstLetterRole(user?.role as string)}/dashboard`
-    );
-  }
+  authenticationAction.checkOnboardingAccess(user?.user as BetterUser);
 
   return (
     <>
