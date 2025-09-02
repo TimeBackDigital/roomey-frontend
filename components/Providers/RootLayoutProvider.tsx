@@ -43,7 +43,7 @@ const RootLayoutProvider = ({
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider user={user}>
-        <main>{children}</main>
+        <main className="bg-background">{children}</main>
       </UserProvider>
     </QueryClientProvider>
   );
