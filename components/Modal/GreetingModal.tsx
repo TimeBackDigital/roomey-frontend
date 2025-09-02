@@ -36,7 +36,7 @@ const GreetingModal = ({
         className="w-full flex flex-col justify-center min-h-screen m-0 px-4 max-w-full sm:max-w-full rounded-none"
       >
         <DialogHeader className="flex flex-col items-center justify-center gap-4 text-center mb-8">
-          <div className="mb-4 fixed top-16 -translate-y-1/2">
+          <div className="mb-4 fixed top-12 -translate-y-1/2">
             <h1 className="text-logo">roomey.</h1>
           </div>
           {Icon && <div className="flex items-center gap-2">{Icon}</div>}
@@ -45,12 +45,12 @@ const GreetingModal = ({
           </DialogTitle>
 
           {description && (
-            <div>
-              <p className="text-center text-secondary text-md font-semibold w-60">
+            <div className="space-y-6">
+              <p className="text-center text-secondary text-md w-60">
                 {description}
               </p>
               {secondaryDescription && (
-                <p className=" text-secondary text-center text-md font-semibold w-60">
+                <p className=" text-secondary text-center text-md w-60">
                   {secondaryDescription}
                 </p>
               )}
