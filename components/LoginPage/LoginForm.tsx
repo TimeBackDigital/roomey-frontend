@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorContext } from "better-auth/react";
 import { LockKeyhole, User } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -26,6 +27,7 @@ import { PasswordInput } from "../ui/password-input";
 import RoomeyText from "../ui/roomey";
 
 const LoginForm = () => {
+  const router = useRouter();
   const loginDefaults: LoginSchemaType = {
     identifier: "",
     password: "",
@@ -54,6 +56,7 @@ const LoginForm = () => {
         const { error } = await signIn.email({
           email: identifier,
           password: password,
+          callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
           fetchOptions: {
             headers: { "x-captcha-response": token ?? "" },
             onError: async (error: ErrorContext) => {
@@ -90,6 +93,8 @@ const LoginForm = () => {
         toast.error(error.message ?? "Failed to send OTP");
         return;
       }
+
+      router.push("/callback");
     } catch {
       toast.error("Sign in failed");
     }

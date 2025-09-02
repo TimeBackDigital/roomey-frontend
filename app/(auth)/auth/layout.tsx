@@ -1,14 +1,12 @@
-"use client";
-
-import { useUser } from "@/components/Providers/AuthProvider";
+import getServerSession from "@/lib/auth/server-session";
 import { authenticationAction } from "@/lib/helper";
 import { BetterUser } from "@/lib/type";
 import React from "react";
 
-const AuthLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useUser();
+const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
+  const user = await getServerSession();
 
-  authenticationAction.authenticated(user as BetterUser);
+  authenticationAction.unauthenticated(user?.user as BetterUser);
 
   return <div className="relative">{children}</div>;
 };

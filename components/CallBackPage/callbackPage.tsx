@@ -1,23 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
 import { authenticationAction } from "@/lib/helper";
+import { BetterUser } from "@/lib/type";
 import { useUser } from "../Providers/AuthProvider";
 
 const CallbackPage = () => {
-  const router = useRouter();
-
   const { user } = useUser();
 
-  useEffect(() => {
-    if (!user) return;
-
-    const route = authenticationAction.authenticated(user);
-
-    router.replace(route);
-  }, [router, user]);
+  authenticationAction.authenticated(user as BetterUser);
 
   return null;
 };
