@@ -47,8 +47,7 @@ type Props = {
 const ResetPasswordOtpVerification = ({ phoneNumber }: Props) => {
   const router = useRouter();
 
-  const effectivePhone =
-    process.env.NODE_ENV === "development" ? "+18777804236" : phoneNumber;
+  const effectivePhone = phoneNumber;
 
   const [step, setStep] = useState<Step>("password");
   const [pendingPassword, setPendingPassword] = useState("");
