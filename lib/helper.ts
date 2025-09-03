@@ -31,36 +31,60 @@ export const getRoleSlug = (role: string | undefined): string => {
 
 export const authenticationAction = {
   authenticated: (user: BetterUser) => {
-    if (!user) return "/auth";
+    if (!user) redirect("/auth");
 
     if (!user.phoneNumberVerified) {
-      throw redirect("/otp-verification");
+      return redirect("/otp-verification");
     }
 
     if (!user.user_is_onboarded) {
-      throw redirect("/onboarding");
+      return redirect("/onboarding");
     }
 
-    const path =
-      user.role === "seeker"
-        ? "/dashboard"
-        : `/${getRoleSlug(user.role)}/dashboard`;
+    if (user.role === "seeker") {
+      return redirect("/");
+    }
 
-    throw redirect(path);
+    return redirect(`/${getRoleSlug(user.role)}/dashboard`);
   },
-  onBoarding: (user: BetterUser) => {
-    if (!user || !user.role) {
+
+  unauthenticated: (user: BetterUser) => {
+    if (!user) {
+      return null;
+    }
+
+    if (!user.phoneNumberVerified) {
+      redirect("/otp-verification");
+    }
+
+    if (!user.user_is_onboarded) {
+      redirect("/onboarding");
+    }
+
+    if (user.role === "seeker") {
       redirect("/");
     }
 
-    if (user.user_is_onboarded) {
-      const path =
-        user.role === "seeker"
-          ? "/dashboard"
-          : `/${getRoleSlug(user.role)}/dashboard`;
-
-      throw redirect(path);
+    redirect(`/${getRoleSlug(user.role)}/dashboard`);
+  },
+  checkOnboardingAccess: (user: BetterUser | null) => {
+    if (!user) {
+      redirect("/auth");
     }
+
+    if (!user.phoneNumberVerified) {
+      redirect("/otp-verification");
+    }
+
+    if (user.user_is_onboarded && user.role !== "seeker") {
+      redirect(`/${getRoleSlug(user.role)}/dashboard`);
+    }
+
+    if (user.user_is_onboarded && user.role === "seeker") {
+      redirect("/");
+    }
+
+    return true; // User can access onboarding
   },
 };
 

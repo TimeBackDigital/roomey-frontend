@@ -15,12 +15,10 @@ const page = async ({ searchParams }: ResetPasswordPageProps) => {
   }
 
   return (
-    <div className="grid min-h-svh">
-      <div className="flex flex-col gap-4 min-h-screen h-full px-4">
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full">
-            <ResetPassword token={token} />
-          </div>
+    <div className="flex flex-col gap-4 min-h-screen h-full px-4">
+      <div className="flex flex-1">
+        <div className="w-full">
+          <ResetPassword token={token} />
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ export const RegisterSchema = z.object({
   displayName: z.string().min(1, "Display name is required"),
   email: z.string().email("Invalid email"),
   phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
-  password: z.string().min(6, "Password must be at least 6 characters").max(25),
+  password: z.string().min(8, "Password must be at least 8 characters").max(25),
   terms: z.boolean(),
 });
 
@@ -33,7 +33,11 @@ export const UnionSchema = z.discriminatedUnion("type", [
 ]);
 
 export const ForgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email"),
+  identifier: z
+    .string()
+    .min(1, "Email or phone number is required")
+    .max(50)
+    .trim(),
 });
 
 export const OtpVerificationSchema = z.object({
@@ -46,10 +50,14 @@ export const OtpVerificationPhoneSchema = z.object({
 
 export const ResetPasswordSchema = z
   .object({
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(25),
     confirmPassword: z
       .string()
-      .min(6, "Password must be at least 6 characters"),
+      .min(8, "Password must be at least 8 characters")
+      .max(25),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -105,7 +113,8 @@ const AdminModalSchema = z.object({
   role: z.string().optional(),
   newPassword: z
     .string()
-    .min(6, "Password must be at least 6 characters")
+    .min(8, "Password must be at least 8 characters")
+    .max(25)
     .optional(),
 });
 
@@ -114,10 +123,14 @@ const CreateUserSchema = z
     action: z.literal("createUser"),
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(25),
     confirmPassword: z
       .string()
-      .min(6, "Password must be at least 6 characters"),
+      .min(8, "Password must be at least 8 characters")
+      .max(25),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

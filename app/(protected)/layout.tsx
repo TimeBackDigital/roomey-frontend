@@ -1,20 +1,16 @@
-"use client";
-
-import { useUser } from "@/components/Providers/AuthProvider";
-import { getRoleSlug } from "@/lib/helper";
-import { redirect } from "next/navigation";
+import getServerSession from "@/lib/auth/server-session";
+import { authenticationAction } from "@/lib/helper";
+import { BetterUser } from "@/lib/type";
 import React from "react";
 
-const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useUser();
+const AuthenticatedLayout = async ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const user = await getServerSession();
 
-  if (!user) {
-    return redirect("/auth");
-  }
-
-  if (user.role !== "admin") {
-    return redirect(getRoleSlug(user.role) + "/dashboard");
-  }
+  authenticationAction.authenticated(user?.user as BetterUser);
 
   return <>{children}</>;
 };

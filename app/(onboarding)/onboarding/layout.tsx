@@ -1,21 +1,24 @@
-"use client";
-
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import OnboardingNavigation from "@/components/Navigation/OnboardingNavigation/OnboardingNavigation";
-import { useUser } from "@/components/Providers/AuthProvider";
+import getServerSession from "@/lib/auth/server-session";
 import { authenticationAction } from "@/lib/helper";
 import { BetterUser } from "@/lib/type";
 import React from "react";
 
-const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useUser();
+const OnboardingLayout = async ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const user = await getServerSession();
 
-  authenticationAction.onBoarding(user as BetterUser);
+  authenticationAction.checkOnboardingAccess(user?.user as BetterUser);
 
   return (
     <>
       <OnboardingNavigation />
-      <section>
+
+      <section className="bg-background-secondary">
         <ErrorBoundary>{children}</ErrorBoundary>
       </section>
     </>

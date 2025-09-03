@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { PasswordInput } from "../ui/password-input";
 import RoomeyText from "../ui/roomey";
 
 const LoginForm = () => {
@@ -53,7 +54,7 @@ const LoginForm = () => {
       if (CheckEmail(identifier)) {
         const { error } = await signIn.email({
           email: identifier,
-          password,
+          password: password,
           callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
           fetchOptions: {
             headers: { "x-captcha-response": token ?? "" },
@@ -85,7 +86,7 @@ const LoginForm = () => {
         return;
       }
 
-      router.push("/callback"); // <-- call here after success
+      router.push("/callback");
     } catch {
       toast.error("Sign in failed");
     }
@@ -135,10 +136,9 @@ const LoginForm = () => {
                   <FormItem>
                     <FormLabel>Password*</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         icon={<LockKeyhole className="size-5" />}
                         id="password"
-                        type="password"
                         placeholder="Password"
                         {...field}
                       />

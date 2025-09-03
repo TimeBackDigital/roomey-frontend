@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { PasswordInput } from "../ui/password-input";
 import RoomeyText from "../ui/roomey";
 
 const RegisterForm = () => {
@@ -65,11 +66,11 @@ const RegisterForm = () => {
         email,
         password,
         user_phone_number:
-          process.env.NODE_ENV === "development"
-            ? "+18777804236"
-            : NormalizePhone(phoneNumber),
+          // process.env.NODE_ENV === "development"
+          //   ? "+18777804236"
+          NormalizePhone(phoneNumber),
         user_is_onboarded: false,
-        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/otp-verification`,
+        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/auth/login`,
         fetchOptions: {
           headers: {
             "x-captcha-response": token ?? "",
@@ -196,10 +197,9 @@ const RegisterForm = () => {
                   <FormItem>
                     <FormLabel>Password*</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         icon={<LockKeyhole className="size-5" />}
                         id="password"
-                        type="password"
                         placeholder="Password"
                         {...field}
                       />

@@ -26,7 +26,6 @@ const OnboardingPage = () => {
   return (
     <>
       <ProfileCreationHeader currentMeta="Create Profile" />
-
       <div className="container">
         <div role="status" className="text-center pb-4">
           <div className="text-[40px]">🎉</div>
