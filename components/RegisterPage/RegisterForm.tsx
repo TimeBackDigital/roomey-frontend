@@ -3,7 +3,6 @@
 import { authClient, signUp } from "@/lib/auth/auth-client";
 import { RegisterSchema, RegisterSchemaType } from "@/lib/schema/schema";
 import { CaptchaApi } from "@/lib/type";
-import { NormalizePhone } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockKeyhole, Mail, Phone, User } from "lucide-react";
 import Link from "next/link";
@@ -65,10 +64,7 @@ const RegisterForm = () => {
         name: displayName,
         email,
         password,
-        user_phone_number:
-          process.env.NODE_ENV === "development"
-            ? "+18777804236"
-            : NormalizePhone(phoneNumber),
+        user_phone_number: phoneNumber,
         user_is_onboarded: false,
         callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/otp-verification`,
         fetchOptions: {

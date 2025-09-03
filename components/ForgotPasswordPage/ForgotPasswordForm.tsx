@@ -75,8 +75,7 @@ const ForgotPasswordForm = ({
       const phone = NormalizePhone(identifier);
 
       const { error } = await authClient.phoneNumber.requestPasswordReset({
-        phoneNumber:
-          process.env.NODE_ENV === "development" ? "+18777804236" : phone,
+        phoneNumber: phone,
         fetchOptions: {
           headers: { "x-captcha-response": token ?? "" },
         },

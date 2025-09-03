@@ -31,6 +31,7 @@ const OtpVerificationForm = ({
   ...props
 }: React.ComponentProps<"form">) => {
   const [countdown, setCountdown] = useState(0);
+  const [hasSentOtp, setHasSentOtp] = useState(false);
 
   const router = useRouter();
 
@@ -54,6 +55,9 @@ const OtpVerificationForm = ({
     if (countdown <= 0) return;
     const id = setInterval(() => {
       setCountdown((s) => (s > 0 ? s - 1 : 0));
+      if (countdown === 0) {
+        setHasSentOtp(false);
+      }
     }, 1000);
     return () => clearInterval(id);
   }, [countdown]);
@@ -61,6 +65,7 @@ const OtpVerificationForm = ({
   const handleSendOtp = async () => {
     if (countdown > 0) return;
 
+    setHasSentOtp(true);
     try {
       const { error } = await authClient.phoneNumber.sendOtp({
         phoneNumber: user?.user.user_phone_number ?? "",
@@ -156,7 +161,7 @@ const OtpVerificationForm = ({
               variant="ghost"
               className="p-0 text-primary"
               size="sm"
-              disabled={isSubmitting || countdown > 0}
+              disabled={isSubmitting || countdown > 0 || hasSentOtp}
               onClick={handleSendOtp}
             >
               Resend {countdown !== 0 && `in ${countdown} sec`}

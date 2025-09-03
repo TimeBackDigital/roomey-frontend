@@ -3,7 +3,7 @@
 import { authClient, signIn } from "@/lib/auth/auth-client";
 import { LoginSchema, LoginSchemaType } from "@/lib/schema/schema";
 import { CaptchaApi } from "@/lib/type";
-import { CheckEmail, NormalizePhone } from "@/lib/utils";
+import { CheckEmail } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorContext } from "better-auth/react";
 import { LockKeyhole, User } from "lucide-react";
@@ -78,14 +78,18 @@ const LoginForm = () => {
         return;
       }
 
-      const phone = NormalizePhone(identifier);
-
       const { error } = await authClient.signIn.phoneNumber({
-        phoneNumber:
-          process.env.NODE_ENV === "development" ? "+18777804236" : phone,
+        phoneNumber: identifier,
         password: password,
         fetchOptions: {
           headers: { "x-captcha-response": token ?? "" },
+          onSuccess: async (ctx) => {
+            if (!ctx.data.user.phoneNumberVerified) {
+              await authClient.phoneNumber.sendOtp({
+                phoneNumber: identifier,
+              });
+            }
+          },
         },
       });
 
