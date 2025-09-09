@@ -6,6 +6,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -49,6 +50,7 @@
   --radius: 0.625rem;
   --background: #f5f5f5;
   --background-secondary: #fafafa;
+  --background-tertiary: #1a1a1a;
   --foreground: oklch(0.145 0 0); /* text black */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);

@@ -36,7 +36,7 @@ const SplashScreen = () => {
   return showSplash ? (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 flex justify-center items-center z-10 bg-background"
+        className="fixed inset-0 flex justify-center items-center z-[9999] bg-background"
         variants={splashVariants}
         initial="visible"
         animate={controls}
