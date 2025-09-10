@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -67,7 +66,6 @@ const ListingCard = ({
             handleClick({
               name: "Save",
               href: "/save",
-              icon: <Heart className="size-6" />,
             })
           }
           className="absolute top-4 right-4 z-10 bg-background/90 backdrop-blur-sm rounded-full h-9 w-9 hover:bg-background"
@@ -146,7 +144,6 @@ const ListingCard = ({
                 handleClick({
                   name: "Message",
                   href: "/message",
-                  icon: <MessageSquare className="size-6" />,
                 })
               }
             >

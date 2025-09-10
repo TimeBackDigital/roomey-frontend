@@ -1,17 +1,11 @@
-import Faqs from "@/components/LandingPage/Faqs/Faqs";
-import FeaturedListings from "@/components/LandingPage/FetauredListings/FeaturedListings";
-import HeroSection from "@/components/LandingPage/HeroSection/HeroSection";
-import HowItWorks from "@/components/LandingPage/HowItWorks/HowItWorks";
+import SeekerPublicPage from "@/components/SeekerPublicPage/SeekerPublicPage";
+import getServerSession from "@/lib/auth/server-session";
+import { BetterUser } from "@/lib/type";
 
-const page = () => {
-  return (
-    <section className="space-y-10">
-      <HeroSection />
-      <FeaturedListings />
-      <HowItWorks />
-      <Faqs />
-    </section>
-  );
+const page = async () => {
+  const session = await getServerSession();
+
+  return <SeekerPublicPage user={session?.user as BetterUser} />;
 };
 
 export default page;

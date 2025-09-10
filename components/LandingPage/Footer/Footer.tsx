@@ -41,7 +41,7 @@ export default function RoomeyLanding() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6  w-full bg-background-tertiary pb-24">
+      <div className="max-w-6xl sm:max-w-none mx-auto px-6  w-full bg-background-tertiary pb-24">
         <RoomeyText className="text-background-secondary text-center pt-8" />
         <Separator className="my-4 bg-muted" />
 

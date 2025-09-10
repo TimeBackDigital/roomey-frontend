@@ -57,7 +57,6 @@ const HeroSection = () => {
               handleClick({
                 name: "Find a Room",
                 href: "/posts",
-                icon: <Search className="w-4 h-4" />,
               })
             }
           >

@@ -1,5 +1,5 @@
 import CardWrapper from "@/components/Card/CardWrapper";
-import { MapPinHouse, MessageSquare, User } from "lucide-react";
+import { MapPinHouse, MessagesSquare, User } from "lucide-react";
 
 const HowItWorks = () => {
   const howItWorks = [
@@ -13,7 +13,7 @@ const HowItWorks = () => {
       title: "Chat",
       description:
         "Create a free profile to securely \nmessage with trusted hosts \nor housemates.",
-      icon: <MessageSquare className="text-primary size-10" />,
+      icon: <MessagesSquare className="text-primary size-10" />,
     },
     {
       title: "Move in.",

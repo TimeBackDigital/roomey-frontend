@@ -1,3 +1,4 @@
+"use client";
 import {
   Accordion,
   AccordionContent,
@@ -5,8 +6,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { useProtectedRoute } from "@/hooks/use-auth-user";
 
 const Faqs = () => {
+  const { handleClick } = useProtectedRoute();
   const items = [
     {
       id: "1",
@@ -61,7 +64,7 @@ const Faqs = () => {
           defaultValue="3"
         >
           {items.map((item) => (
-            <AccordionItem value={item.id} key={item.id} className="py-2">
+            <AccordionItem value={item.id} key={item.id}>
               <AccordionTrigger className="font-bold ">
                 {item.id}. {item.title}
               </AccordionTrigger>
@@ -72,7 +75,18 @@ const Faqs = () => {
           ))}
         </Accordion>
       </div>
-      <Button className="w-full" size="lg" variant="outline">
+      <Button
+        className="w-full"
+        size="lg"
+        variant="outline"
+        onClick={() =>
+          handleClick({
+            name: "See More",
+            href: "/faqs",
+            protected: true,
+          })
+        }
+      >
         See More
       </Button>
     </section>

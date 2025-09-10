@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 
 type NavItem = {
   name: string;
-  icon: React.ReactNode;
   href: string;
   protected?: boolean;
 };
