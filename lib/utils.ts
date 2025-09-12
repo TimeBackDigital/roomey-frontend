@@ -315,3 +315,20 @@ export function buildAllDefaults(
   }
   return all;
 }
+
+export const toBoolFromYesNo = (v: unknown) =>
+  String(v).toLowerCase() === "yes";
+
+export const isFile = (v: unknown): v is File =>
+  typeof window !== "undefined" && v instanceof File;
+
+export function mapZodErrorsToForm(
+  err: z.ZodError,
+  setError: (name: string, error: { message: string }) => void
+) {
+  for (const issue of err.errors) {
+    if (issue.path.length > 0) {
+      setError(issue.path[0] as string, { message: issue.message });
+    }
+  }
+}

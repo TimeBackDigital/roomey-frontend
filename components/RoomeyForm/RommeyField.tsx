@@ -16,22 +16,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { AGE_MAP } from "@/lib/constant";
 import { FieldConfig } from "@/lib/type";
 import { Check, ChevronDownIcon, CloudUpload, Images } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { Control, FieldPath, FieldValues } from "react-hook-form";
+import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { RadioGroup } from "../ui/radio-group";
 
 type RenderFieldsProps = {
-  control: Control<FieldValues>;
   fields: FieldConfig[];
+  form: UseFormReturn<FieldValues>;
 };
 
-const RenderFields = ({ control, fields }: RenderFieldsProps) => {
+const RenderFields = ({ fields, form }: RenderFieldsProps) => {
   const [openPopover, setOpenPopover] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,14 +56,15 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
     "bond_amount",
     "bond_unit",
     "availability",
+    "price_range_max",
   ];
 
   return fields.map((f) => {
-    if (f.name === "budget_amount") {
-      const unitField = fields.find((ff) => ff.name === "budget_unit");
-      const amountField = fields.find((ff) => ff.name === "budget_amount");
+    if (f.name === "price_range_min") {
+      const minField = fields.find((ff) => ff.name === "price_range_min");
+      const maxField = fields.find((ff) => ff.name === "price_range_max");
 
-      if (!unitField?.name || !amountField?.name) return null;
+      if (!minField?.name || !maxField?.name) return null;
 
       return (
         <div key="budget-group" className="space-y-2">
@@ -72,9 +74,9 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
 
           <div className="grid grid-cols-2 gap-3">
             <FormField
-              key={amountField.name}
-              control={control}
-              name={amountField.name as FieldPath<FieldValues>}
+              key={minField.name}
+              control={form.control}
+              name={minField.name as FieldPath<FieldValues>}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -82,7 +84,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
                       type="number"
                       inputMode="decimal"
                       {...field}
-                      placeholder="$250"
+                      placeholder={f.placeholder}
                     />
                   </FormControl>
                   <FormMessage />
@@ -91,29 +93,18 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
             />
 
             <FormField
-              key={"budget_unit"}
-              control={control}
-              name={"budget_unit"}
+              key={maxField.name}
+              control={form.control}
+              name={maxField.name as FieldPath<FieldValues>}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-full bg-background-secondary">
-                        <SelectValue
-                          placeholder={unitField.placeholder || "Select"}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {unitField.options?.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      {...field}
+                      placeholder={maxField.placeholder}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,7 +128,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
           <div className="grid grid-cols-2 gap-3">
             <FormField
               key={amountField.name}
-              control={control}
+              control={form.control}
               name={amountField.name as FieldPath<FieldValues>}
               render={({ field }) => (
                 <FormItem>
@@ -156,7 +147,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
 
             <FormField
               key={unitField?.name}
-              control={control}
+              control={form.control}
               name={unitField?.name as FieldPath<FieldValues>}
               render={({ field }) => (
                 <FormItem>
@@ -201,7 +192,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
 
             <FormField
               key={amountField.name}
-              control={control}
+              control={form.control}
               name={amountField.name as FieldPath<FieldValues>}
               render={({ field }) => (
                 <FormItem>
@@ -225,7 +216,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
             </FormLabel>
             <FormField
               key={unitField?.name}
-              control={control}
+              control={form.control}
               name={unitField?.name as FieldPath<FieldValues>}
               render={({ field }) => (
                 <FormItem>
@@ -258,11 +249,12 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
     }
 
     if (hiddenFields.includes(f.name)) return null;
+    if (f.hidden) return null;
 
     return (
       <FormField
         key={f.name}
-        control={control}
+        control={form.control}
         name={f.name}
         render={({ field }) => {
           switch (f.type) {
@@ -397,6 +389,113 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
             }
 
             case "radio group": {
+              if (f.name === "age_preference") {
+                return (
+                  <FormField
+                    control={form.control}
+                    name={f.name as FieldPath<FieldValues>}
+                    render={({ field }) => (
+                      <FormItem
+                        className={
+                          f.isRow
+                            ? "flex flex-wrap items-center"
+                            : "flex flex-col"
+                        }
+                      >
+                        <FormLabel className="mb-1">
+                          {f.label}
+                          {f.required && <span>*</span>}
+                        </FormLabel>
+
+                        {f.description && (
+                          <FormDescription>{f.description}</FormDescription>
+                        )}
+
+                        <FormControl>
+                          <RadioGroup
+                            value={field.value ?? ""}
+                            onValueChange={(val) => {
+                              // normal change
+                              field.onChange(val);
+                              const cfg = AGE_MAP[val as keyof typeof AGE_MAP];
+                              if (cfg) {
+                                form.setValue("age_preference_min", cfg.min, {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                });
+                                form.setValue("age_preference_max", cfg.max, {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                });
+                              }
+                            }}
+                            className="flex flex-wrap gap-2"
+                          >
+                            {f.options?.map((opt) => {
+                              const active = field.value === opt.value;
+
+                              const handleClick = () => {
+                                // toggle off if clicking the active pill
+                                if (active) {
+                                  field.onChange(undefined);
+                                  form.setValue("age_preference_min", null, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  });
+                                  form.setValue("age_preference_max", null, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  });
+                                  return;
+                                }
+                                // otherwise let RadioGroup onValueChange handle it
+                                field.onChange(opt.value);
+                                const cfg =
+                                  AGE_MAP[opt.value as keyof typeof AGE_MAP];
+                                if (cfg) {
+                                  form.setValue("age_preference_min", cfg.min, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  });
+                                  form.setValue("age_preference_max", cfg.max, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  });
+                                }
+                              };
+
+                              return (
+                                <Button
+                                  key={opt.value}
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={handleClick}
+                                  aria-pressed={active}
+                                  className={[
+                                    "border text-sm",
+                                    active &&
+                                      "bg-primary text-background-secondary",
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" ")}
+                                >
+                                  {opt.label}
+                                </Button>
+                              );
+                            })}
+                          </RadioGroup>
+                        </FormControl>
+
+                        <div className="block">
+                          <FormMessage className="block bottom-0" />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                );
+              }
+
               return (
                 <FormItem
                   className={`${
@@ -458,7 +557,7 @@ const RenderFields = ({ control, fields }: RenderFieldsProps) => {
             }
 
             case "file": {
-              const isProfilePhoto = f.name === "profile_photo";
+              const isProfilePhoto = f.name === "photo_url";
               if (!isProfilePhoto) {
                 return (
                   <FormItem>

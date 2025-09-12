@@ -64,13 +64,6 @@ export const ResetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export const SeekerSchema = z.object({
-  profilePhoto: z.instanceof(File),
-  allowMarketing: z.boolean(),
-  allowVerification: z.boolean(),
-  role: z.literal("seeker"),
-});
-
 export const ListerSchema = z.object({
   profilePhoto: z.instanceof(File),
   allowMarketing: z.boolean(),
@@ -86,24 +79,6 @@ export const AgencySchema = z.object({
   allowVerification: z.boolean(),
   role: z.literal("agency"),
 });
-
-export const schemaByRole = {
-  seeker: {
-    schema: SeekerSchema,
-    totalSteps: 2,
-    redirectTo: "/",
-  },
-  lister: {
-    schema: ListerSchema,
-    totalSteps: 2,
-    redirectTo: "/",
-  },
-  agency: {
-    schema: AgencySchema,
-    totalSteps: 3,
-    redirectTo: "/",
-  },
-};
 
 const AdminModalSchema = z.object({
   action: z

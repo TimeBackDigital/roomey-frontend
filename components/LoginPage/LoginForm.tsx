@@ -86,7 +86,7 @@ const LoginForm = () => {
         return;
       }
 
-      router.push("/callback");
+      router.refresh();
     } catch {
       toast.error("Sign in failed");
     }

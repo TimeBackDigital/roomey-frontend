@@ -23,7 +23,7 @@ const OnboardingProfileCompleted = ({
         </div>
 
         <PremiumUpgradeCard />
-        <ReadyToFindCard role={role} />
+        <ReadyToFindCard href={`/`} role={role} />
       </div>
     </>
   );

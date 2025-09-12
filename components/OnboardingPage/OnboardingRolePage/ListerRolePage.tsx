@@ -119,7 +119,7 @@ const ListerRolePage = () => {
               )}
             </div>
 
-            <RenderFields control={form.control} fields={currentFields} />
+            <RenderFields fields={currentFields} form={form} />
           </div>
 
           <div className="container py-4 flex flex-col justify-end gap-4">

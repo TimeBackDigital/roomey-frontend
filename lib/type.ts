@@ -56,6 +56,7 @@ export type FieldConfig = {
   description?: string;
   isRow?: boolean;
   required?: boolean;
+  hidden?: boolean;
   type?:
     | "text"
     | "email"
@@ -108,3 +109,5 @@ export type PlanList = {
   plan_type: string;
   plan_limit: JSON;
 };
+
+export type UploadedImage = { url: string; public_id: string } | null;

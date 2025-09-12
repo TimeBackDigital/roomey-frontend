@@ -7,12 +7,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { READY_TO_FIND_CARD } from "@/lib/enum";
+import Link from "next/link";
 
 type ReadyToFindCardProps = {
   role: string;
+  href: string;
 };
 
-const ReadyToFindCard = ({ role }: ReadyToFindCardProps) => {
+const ReadyToFindCard = ({ role, href }: ReadyToFindCardProps) => {
   const card = READY_TO_FIND_CARD[role as keyof typeof READY_TO_FIND_CARD];
   return (
     <Card className="text-center max-w-sm mx-auto bg-transparent">
@@ -26,9 +28,11 @@ const ReadyToFindCard = ({ role }: ReadyToFindCardProps) => {
       </CardHeader>
 
       <CardFooter>
-        <Button className="w-full" size="lg" variant="outline_card">
-          {card.cta}
-        </Button>
+        <Link href={href} className="w-full">
+          <Button className="w-full" size="lg" variant="outline_card">
+            {card.cta}
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
