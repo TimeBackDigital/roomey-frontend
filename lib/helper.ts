@@ -47,7 +47,6 @@ export const authenticationAction = {
 
     return redirect(`/${getRoleSlug(user.role)}/dashboard`);
   },
-
   unauthenticated: (user: BetterUser) => {
     if (!user) {
       return null;
@@ -86,4 +85,28 @@ export const authenticationAction = {
 
     return true; // User can access onboarding
   },
+  completedOnboarding: (user: BetterUser) => {
+    if (!user) {
+      redirect("/auth");
+    }
+
+    if (!user.user_is_onboarded) {
+      redirect("/onboarding");
+    }
+
+    return true;
+  },
+};
+
+export const formatErrorMessage = (error: string) => {
+  return error.replaceAll("_", " ");
+};
+
+export const capitalizeFirstLetters = (text: string) => {
+  return text
+    .replaceAll("_", " ")
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 };

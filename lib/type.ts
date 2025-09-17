@@ -54,6 +54,9 @@ export type FieldConfig = {
   placeholder?: string;
   title?: string;
   description?: string;
+  isRow?: boolean;
+  required?: boolean;
+  hidden?: boolean;
   type?:
     | "text"
     | "email"
@@ -65,9 +68,13 @@ export type FieldConfig = {
     | "file"
     | "select"
     | "profile_photo"
-    | "checkbox_agreement";
+    | "checkbox_agreement"
+    | "radio group"
+    | "multi file";
   options?: FieldOption[];
 };
+
+export type DefaultStrategy = "empty" | "firstOption";
 
 export type UserListType = {
   id: string;
@@ -102,3 +109,5 @@ export type PlanList = {
   plan_type: string;
   plan_limit: JSON;
 };
+
+export type UploadedImage = { url: string; public_id: string } | null;

@@ -1,4 +1,3 @@
-import { phoneNumber } from "better-auth/plugins";
 import { z } from "zod";
 
 export const phoneRegex = /^[+]?[\d\s\-().]{7,20}$/;
@@ -14,15 +13,23 @@ export const LoginSchema = z.object({
 
 export const RegisterSchema = z.object({
   displayName: z.string().min(1, "Display name is required"),
-  email: z.email("Invalid email"),
+  email: z.string().email("Invalid email"),
   phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
   password: z.string().min(8, "Password must be at least 8 characters").max(25),
   terms: z.boolean(),
 });
 
+export const LoginSchemaWithType = LoginSchema.extend({
+  type: z.literal("login"),
+});
+
+export const RegisterSchemaWithType = RegisterSchema.extend({
+  type: z.literal("register"),
+});
+
 export const UnionSchema = z.discriminatedUnion("type", [
-  LoginSchema,
-  RegisterSchema,
+  LoginSchemaWithType,
+  RegisterSchemaWithType,
 ]);
 
 export const ForgotPasswordSchema = z.object({
@@ -38,7 +45,7 @@ export const OtpVerificationSchema = z.object({
 });
 
 export const OtpVerificationPhoneSchema = z.object({
-  phoneNumber: phoneNumber(),
+  phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
 });
 
 export const ResetPasswordSchema = z
@@ -57,13 +64,6 @@ export const ResetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export const SeekerSchema = z.object({
-  profilePhoto: z.instanceof(File),
-  allowMarketing: z.boolean(),
-  allowVerification: z.boolean(),
-  role: z.literal("seeker"),
-});
-
 export const ListerSchema = z.object({
   profilePhoto: z.instanceof(File),
   allowMarketing: z.boolean(),
@@ -79,24 +79,6 @@ export const AgencySchema = z.object({
   allowVerification: z.boolean(),
   role: z.literal("agency"),
 });
-
-export const schemaByRole = {
-  seeker: {
-    schema: SeekerSchema,
-    totalSteps: 2,
-    redirectTo: "/",
-  },
-  lister: {
-    schema: ListerSchema,
-    totalSteps: 2,
-    redirectTo: "/",
-  },
-  agency: {
-    schema: AgencySchema,
-    totalSteps: 3,
-    redirectTo: "/",
-  },
-};
 
 const AdminModalSchema = z.object({
   action: z
@@ -130,7 +112,7 @@ const CreateUserSchema = z
     path: ["confirmPassword"],
   });
 
-export const AdminMOdalFormSchema = z.discriminatedUnion("action", [
+export const AdminMOdalFormSchema = z.union([
   AdminModalSchema,
   CreateUserSchema,
 ]);

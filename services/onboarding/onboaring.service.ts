@@ -20,6 +20,20 @@ const OnboardingService = {
 
     return response.data;
   },
+
+  createSeekerOnboarding: async (params: unknown) => {
+    const response = await axios.post(`/api/seeker`, params, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.status) {
+      throw new Error(response.data.message);
+    }
+
+    return response.data;
+  },
 };
 
 export default OnboardingService;

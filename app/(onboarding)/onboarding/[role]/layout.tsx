@@ -17,7 +17,8 @@ const OnboardingLayout = async ({
   return (
     <>
       <OnboardingNavigation />
-      <section className="container bg-background-secondary">
+
+      <section className="bg-background-secondary">
         <ErrorBoundary>{children}</ErrorBoundary>
       </section>
     </>

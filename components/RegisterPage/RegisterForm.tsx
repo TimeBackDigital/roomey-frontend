@@ -66,11 +66,11 @@ const RegisterForm = () => {
         email,
         password,
         user_phone_number:
-          process.env.NODE_ENV === "development"
-            ? "+18777804236"
-            : NormalizePhone(phoneNumber),
+          // process.env.NODE_ENV === "development"
+          //   ? "+18777804236"
+          NormalizePhone(phoneNumber),
         user_is_onboarded: false,
-        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/otp-verification`,
+        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/auth/login`,
         fetchOptions: {
           headers: {
             "x-captcha-response": token ?? "",
@@ -101,7 +101,7 @@ const RegisterForm = () => {
         title="Check your inbox"
         description="We've sent you a magic link"
         secondaryDescription="Click it to continue"
-        isOpen={true}
+        isOpen={success}
         onOpenChange={setSuccess}
       />
     );

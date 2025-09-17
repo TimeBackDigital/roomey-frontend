@@ -151,7 +151,7 @@ export default function AdminActionModal({
       case "promote":
         promoteRole.mutate({
           userId: defaultUserId || "",
-          role: values.role as "admin" | "agency" | "seeker" | "lister",
+          role: values.role as "admin" | "seeker" | "lister",
         });
         break;
       case "changePassword":

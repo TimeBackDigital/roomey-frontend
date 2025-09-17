@@ -51,7 +51,7 @@
   --background-secondary: #fafafa;
   --foreground: oklch(0.145 0 0); /* text black */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: #ecedef;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: #414b57;
@@ -135,9 +135,12 @@
     @apply text-[20px] font-[700] text-text-black;
   }
   p {
-    @apply text-[16px] text-[#414B57];
+    @apply text-[16px] font-[400] text-[#414B57];
   }
 
+  .sub-p {
+    @apply text-[14px] text-[#414B57];
+  }
   .text-sub-heading {
     @apply text-[16px] font-bold;
   }
@@ -146,12 +149,21 @@
     @apply text-4xl font-bold text-[#414b57] tracking-wide;
   }
   .container {
-    @apply px-4 py-6 min-w-full;
+    @apply px-4 py-6 min-w-full relative;
   }
   .table-row-header {
     @apply bg-[#d1d4db];
   }
   .table-text {
     @apply text-[#68c77];
+  }
+  .card-background {
+    @apply bg-[#ecedef];
+  }
+  .ring-inactive {
+    @apply border-[#d1d5db] text-[#d1d5db];
+  }
+  .lucide {
+    @apply text-primary;
   }
 }
