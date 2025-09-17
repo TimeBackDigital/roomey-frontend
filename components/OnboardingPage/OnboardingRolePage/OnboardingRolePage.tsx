@@ -73,7 +73,7 @@ export default function OnboardingRolePage({ role }: Props) {
       });
 
       await refetch();
-    } catch (e) {
+    } catch {
       await ImageService.deleteImage(image.public_id);
     }
 

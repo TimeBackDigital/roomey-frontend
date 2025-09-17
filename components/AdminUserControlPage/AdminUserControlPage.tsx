@@ -63,14 +63,6 @@ const AdminUserControlPage = () => {
     },
   });
 
-  const handleSearch = (newFilters: Partial<Filters>) => {
-    setFilters((prev) => ({
-      ...prev,
-      ...newFilters,
-      page: newFilters.page ?? 1,
-    }));
-  };
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-end justify-end">

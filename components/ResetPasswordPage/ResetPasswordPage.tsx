@@ -77,7 +77,7 @@ const ResetPasswordPage = ({ token }: ResetPasswordPageProps) => {
       setCount(3);
 
       setSuccess(true);
-    } catch (error) {
+    } catch {
       toast.error("Failed to reset password");
     }
   };

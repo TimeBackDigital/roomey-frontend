@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import RoomeyText from "../ui/roomey";
+import smsVerify from "./../../lib/clients/sms-verify";
 
 const OtpVerificationForm = ({
   className,
@@ -86,11 +87,8 @@ const OtpVerificationForm = ({
 
   const handleOtpSubmit = async (data: OtpVerificationSchemaType) => {
     try {
-      const { error } = await authClient.phoneNumber.verify({
-        phoneNumber: user?.user.user_phone_number ?? "",
-        code: data.otp,
-      });
-
+      const phoneNumber = user?.user.user_phone_number ?? "";
+      const { error } = await smsVerify(data.otp, phoneNumber);
       if (error) {
         toast.error(error.message ?? "Failed to verify OTP");
         return;
@@ -98,12 +96,13 @@ const OtpVerificationForm = ({
 
       toast.success("Phone number verified successfully");
 
-      reset();
-      refetch();
+      await reset();
+      await refetch();
       router.push("/onboarding");
 
       setCountdown(0);
-    } catch {
+    } catch (err) {
+      console.log("err", err);
       toast.error("Failed to verify OTP");
     }
   };
