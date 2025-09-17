@@ -6,19 +6,25 @@ const getServerSession = async (): Promise<typeof SessionResponse | null> => {
   try {
     const cookieHeader = (await cookies()).toString();
 
-    const res = await fetch(`${process.env.API_URL}/api/auth/get-session`, {
-      credentials: "include",
-      headers: {
-        Cookie: cookieHeader,
-      },
-    });
-
-    return res.json() as Promise<
+    const res = await fetch(
+      `${process.env.API_URL}/api/auth-roomey/get-session`,
+      {
+        credentials: "include",
+        headers: {
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+          Expires: "0",
+          Cookie: cookieHeader,
+        },
+      }
+    );
+    const response = (await res.json()) as Promise<
       typeof SessionResponse & {
         user: BetterUser;
       }
     >;
-  } catch (error) {
+    return response;
+  } catch {
     return null;
   }
 };
