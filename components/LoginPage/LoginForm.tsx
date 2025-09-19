@@ -58,7 +58,7 @@ const LoginForm = () => {
           password: password,
           callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
           fetchOptions: {
-            headers: { "x-captcha-response": token ?? "" },
+            // headers: { "x-captcha-response": token ?? "" },
             onError: async (error: ErrorContext) => {
               if (error.error.code === "EMAIL_NOT_VERIFIED") {
                 await signIn.magicLink({
@@ -82,7 +82,7 @@ const LoginForm = () => {
         phoneNumber: identifier,
         password: password,
         fetchOptions: {
-          headers: { "x-captcha-response": token ?? "" },
+          // headers: { "x-captcha-response": token ?? "" },
           onSuccess: async (ctx) => {
             if (!ctx.data.user.phoneNumberVerified) {
               await authClient.phoneNumber.sendOtp({
