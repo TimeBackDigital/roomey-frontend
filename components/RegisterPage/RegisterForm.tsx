@@ -69,7 +69,7 @@ const RegisterForm = () => {
         callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/otp-verification`,
         fetchOptions: {
           headers: {
-            "x-captcha-response": token ?? "",
+            // "x-captcha-response": token ?? "",
           },
           onSuccess: async () => {
             await authClient.phoneNumber.sendOtp({
